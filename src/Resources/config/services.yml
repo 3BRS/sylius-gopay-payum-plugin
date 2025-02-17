@@ -1,0 +1,37 @@
+services:
+    _defaults:
+        public: true
+
+    threebrs.gopay_payum.gateway_factory:
+        class: ThreeBRS\GoPayPayumPlugin\Payum\GoPayPaymentGatewayFactory
+
+    threebrs.gopay_payum.gateway_factory_builder:
+        class: Payum\Core\Bridge\Symfony\Builder\GatewayFactoryBuilder
+        arguments:
+            - '@threebrs.gopay_payum.gateway_factory'
+        tags:
+            - { name: 'payum.gateway_factory_builder', factory: 'gopay' }
+
+    threebrs.gopay_payum.api:
+        class: ThreeBRS\GoPayPayumPlugin\Api\GoPayPayumApi
+
+    threebrs.gopay_payum.form.type.gateway_configuration:
+        class: ThreeBRS\GoPayPayumPlugin\Form\Type\GoPayPayumGatewayConfigurationType
+        tags:
+            - { name: 'sylius.gateway_configuration_type', type: 'gopay', label: 'threebrs.gopay_plugin.gateway_label' }
+            - { name: 'form.type' }
+
+    threebrs.gopay_payum.action.gopay:
+        class: ThreeBRS\GoPayPayumPlugin\Payum\Action\GoPayAction
+        arguments:
+            - '@threebrs.gopay_payum.api'
+            - '@payum'
+        tags:
+            - { name: 'payum.action', factory: 'gopay' }
+
+    threebrs.gopay_payum.action.notify:
+        class: ThreeBRS\GoPayPayumPlugin\Payum\Action\NotifyAction
+        arguments:
+            - '@threebrs.gopay_payum.api'
+        tags:
+            - { name: 'payum.action', factory: 'gopay' }

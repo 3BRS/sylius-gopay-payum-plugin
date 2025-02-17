@@ -1,0 +1,9 @@
+threebrs:
+    gopay_payum_plugin:
+        gateway_configuration:
+            client_id:
+                not_blank: Vyplňte Client ID
+            client_secret:
+                not_blank: Vyplňte Client secret
+            goid:
+                not_blank: Vyplňte Go ID

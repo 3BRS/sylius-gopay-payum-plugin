@@ -2,9 +2,8 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin\Action;
+namespace ThreeBRS\GoPayPayumPlugin\Payum\Action;
 
-use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiPayumInterface;
 use JetBrains\PhpStorm\Pure;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -13,6 +12,7 @@ use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
+use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiPayumInterface;
 
 final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
 {

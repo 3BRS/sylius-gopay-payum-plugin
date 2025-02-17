@@ -2,11 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin\Action;
+namespace ThreeBRS\GoPayPayumPlugin\Payum\Action;
 
 use ArrayObject;
-use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiPayumInterface;
-use ThreeBRS\GoPayPayumPlugin\SetGoPay;
 use JetBrains\PhpStorm\Pure;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
@@ -19,6 +17,8 @@ use Payum\Core\Security\TokenInterface;
 use Payum\Core\Storage\IdentityInterface;
 use RuntimeException;
 use Sylius\Component\Core\Model\CustomerInterface;
+use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiPayumInterface;
+use ThreeBRS\GoPayPayumPlugin\Payum\GoPayPayumRequest;
 use Webmozart\Assert\Assert;
 
 class GoPayAction implements ApiAwareInterface, ActionInterface
@@ -29,17 +29,16 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
 
     public function __construct(
         private GoPayApiPayumInterface $gopayApi,
-        private Payum                  $payum
-    )
-    {
+        private Payum                  $payum,
+    ) {
     }
 
     public function execute(mixed $request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
-        $goId = $this->api['goid'];
-        $clientId = $this->api['clientId'];
-        $clientSecret = $this->api['clientSecret'];
+        $goId             = $this->api['goid'];
+        $clientId         = $this->api['clientId'];
+        $clientSecret     = $this->api['clientSecret'];
         $isProductionMode = $this->api['isProductionMode'];
 
         $model = PayumArrayObject::ensureArrayObject($request->getModel());
@@ -48,12 +47,12 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         $gopayApi->authorize($goId, $clientId, $clientSecret, $isProductionMode, $model['locale']);
 
         if (null === $model['orderId'] || null === $model['externalPaymentId']) {
-            $token = $request->getToken();
-            $order = $this->prepareOrder($token, $model, $goId);
+            $token    = $request->getToken();
+            $order    = $this->prepareOrder($token, $model, $goId);
             $response = $gopayApi->create($order);
 
             if ($response && false === isset($response->json['errors']) && GoPayApiPayumInterface::CREATED === $response->json['state']) {
-                $model['orderId'] = $response->json['order_number'];
+                $model['orderId']           = $response->json['order_number'];
                 $model['externalPaymentId'] = $response->json['id'];
                 $request->setModel($model);
 
@@ -69,7 +68,7 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
     #[Pure]
     public function supports(mixed $request): bool
     {
-        return $request instanceof SetGoPay && $request->getModel() instanceof ArrayObject;
+        return $request instanceof GoPayPayumRequest && $request->getModel() instanceof ArrayObject;
     }
 
     public function setApi(mixed $api): void
@@ -86,17 +85,19 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         $this->gopayApi = $gopayApi;
     }
 
-    private function prepareOrder(TokenInterface $token, PayumArrayObject $model, string $goid): array
-    {
+    private function prepareOrder(TokenInterface   $token,
+                                  PayumArrayObject $model,
+                                  string           $goid,
+    ): array {
         $notifyToken = $this->createNotifyToken($token->getGatewayName(), $token->getDetails());
 
-        $order = [];
+        $order                   = [];
         $order['target']['type'] = 'ACCOUNT';
         $order['target']['goid'] = $goid;
-        $order['currency'] = $model['currencyCode'];
-        $order['amount'] = $model['totalAmount'];
-        $order['order_number'] = $model['extOrderId'];
-        $order['lang'] = $model['locale'];
+        $order['currency']       = $model['currencyCode'];
+        $order['amount']         = $model['totalAmount'];
+        $order['order_number']   = $model['extOrderId'];
+        $order['lang']           = $model['locale'];
 
         /** @var CustomerInterface $customer */
         $customer = $model['customer'];
@@ -106,20 +107,20 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
             CustomerInterface::class,
             sprintf(
                 'Make sure the first model is the %s instance.',
-                CustomerInterface::class
-            )
+                CustomerInterface::class,
+            ),
         );
 
         $payerContact = [
-            'email' => (string)$customer->getEmail(),
+            'email'      => (string)$customer->getEmail(),
             'first_name' => (string)$customer->getFirstName(),
-            'last_name' => (string)$customer->getLastName(),
+            'last_name'  => (string)$customer->getLastName(),
         ];
 
         $order['payer']['contact'] = $payerContact;
-        $order['items'] = $this->resolveProducts($model);
+        $order['items']            = $this->resolveProducts($model);
 
-        $order['callback']['return_url'] = $token->getTargetUrl();
+        $order['callback']['return_url']       = $token->getTargetUrl();
         $order['callback']['notification_url'] = $notifyToken->getTargetUrl();
 
         return $order;
@@ -130,17 +131,18 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         if (false === $model->offsetExists('items') || 0 === count($model['items'])) {
             return [
                 [
-                    'name' => $model['description'],
-                    'amount' => $model['totalAmount']
-                ]
+                    'name'   => $model['description'],
+                    'amount' => $model['totalAmount'],
+                ],
             ];
         }
 
         return [];
     }
 
-    private function createNotifyToken(string $gatewayName, IdentityInterface $model): TokenInterface
-    {
+    private function createNotifyToken(string            $gatewayName,
+                                       IdentityInterface $model,
+    ): TokenInterface {
         return $this->payum->getTokenFactory()->createNotifyToken($gatewayName, $model);
     }
 }

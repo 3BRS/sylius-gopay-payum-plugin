@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin\Action;
+namespace ThreeBRS\GoPayPayumPlugin\Payum\Action;
 
 use ArrayAccess;
-use ThreeBRS\GoPayPayumPlugin\SetGoPay;
 use JetBrains\PhpStorm\Pure;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
@@ -15,6 +14,7 @@ use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Capture;
 use Payum\Core\Security\TokenInterface;
 use Sylius\Component\Core\Model\OrderInterface;
+use ThreeBRS\GoPayPayumPlugin\Payum\GoPayPayumRequest;
 
 final class CaptureAction implements ActionInterface, GatewayAwareInterface
 {
@@ -32,7 +32,7 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface
         $model['customer'] = $order->getCustomer();
         $model['locale'] = $this->fallbackLocaleCode($order->getLocaleCode());
 
-        $this->gateway->execute($this->goPayAction($request->getToken(), $model));
+        $this->gateway->execute($this->createRequest($request->getToken(), $model));
     }
 
     #[Pure]
@@ -41,12 +41,12 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface
         return $request instanceof Capture && $request->getModel() instanceof ArrayAccess;
     }
 
-    private function goPayAction(TokenInterface $token, ArrayObject $model): SetGoPay
+    private function createRequest(TokenInterface $token, ArrayObject $model): GoPayPayumRequest
     {
-        $gopayAction = new SetGoPay($token);
-        $gopayAction->setModel($model);
+        $goPayPayumRequest = new GoPayPayumRequest($token);
+        $goPayPayumRequest->setModel($model);
 
-        return $gopayAction;
+        return $goPayPayumRequest;
     }
 
     private function fallbackLocaleCode(string $localeCode): string

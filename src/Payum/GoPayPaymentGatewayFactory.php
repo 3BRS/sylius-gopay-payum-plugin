@@ -2,17 +2,17 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin;
+namespace ThreeBRS\GoPayPayumPlugin\Payum;
 
-use ThreeBRS\GoPayPayumPlugin\Action\CaptureAction;
-use ThreeBRS\GoPayPayumPlugin\Action\ConvertPaymentAction;
-use ThreeBRS\GoPayPayumPlugin\Action\StatusAction;
 use GoPay\Definition\Language;
 use GoPay\Definition\TokenScope;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
+use ThreeBRS\GoPayPayumPlugin\Payum\Action\CaptureAction;
+use ThreeBRS\GoPayPayumPlugin\Payum\Action\ConvertPaymentAction;
+use ThreeBRS\GoPayPayumPlugin\Payum\Action\StatusAction;
 
-class GoPayGatewayFactory extends GatewayFactory
+class GoPayPaymentGatewayFactory extends GatewayFactory
 {
     protected function populateConfig(ArrayObject $config): void
     {
@@ -25,7 +25,7 @@ class GoPayGatewayFactory extends GatewayFactory
             'payum.action.status' => new StatusAction()
         ]);
 
-        if (false == $config['payum.api']) {
+        if (!$config['payum.api']) {
             $config['payum.default_options'] = [
                 'goid' => '',
                 'clientId' => '',

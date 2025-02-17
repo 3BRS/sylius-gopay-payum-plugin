@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin\Action;
+namespace ThreeBRS\GoPayPayumPlugin\Payum\Action;
 
-use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiPayumInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
+use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiPayumInterface;
 
 trait UpdateOrderActionTrait
 {

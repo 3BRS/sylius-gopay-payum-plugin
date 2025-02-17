@@ -2,10 +2,9 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin\Action;
+namespace ThreeBRS\GoPayPayumPlugin\Payum\Action;
 
 use ArrayObject;
-use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiPayumInterface;
 use Exception;
 use JetBrains\PhpStorm\Pure;
 use Payum\Core\Action\ActionInterface;
@@ -16,6 +15,7 @@ use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Reply\HttpResponse;
 use Payum\Core\Request\Notify;
 use Sylius\Component\Core\Model\PaymentInterface;
+use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiPayumInterface;
 use Webmozart\Assert\Assert;
 
 final class NotifyAction implements ActionInterface, ApiAwareInterface
@@ -25,7 +25,7 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
     private array $api = [];
 
     public function __construct(
-        private GoPayApiPayumInterface $gopayApi
+        private GoPayApiPayumInterface $goPayApi
     )
     {
     }
@@ -40,7 +40,7 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
 
         $model = $request->getModel();
 
-        $this->gopayApi->authorize(
+        $this->goPayApi->authorize(
             $this->api['goid'],
             $this->api['clientId'],
             $this->api['clientSecret'],
@@ -49,7 +49,7 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
         );
 
         try {
-            $this->updateExistingOrder($this->gopayApi, $request, $model);
+            $this->updateExistingOrder($this->goPayApi, $request, $model);
 
             throw new HttpResponse('SUCCESS');
         } catch (Exception $e) {
