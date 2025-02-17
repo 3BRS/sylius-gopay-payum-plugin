@@ -22,7 +22,7 @@ class GoPayPaymentGatewayFactory extends GatewayFactory
 
             'payum.action.capture' => new CaptureAction(),
             'payum.action.convert_payment' => new ConvertPaymentAction(),
-            'payum.action.status' => new StatusAction()
+            'payum.action.status' => new StatusAction(),
         ]);
 
         if (!$config['payum.api']) {
@@ -30,7 +30,7 @@ class GoPayPaymentGatewayFactory extends GatewayFactory
                 'goid' => '',
                 'clientId' => '',
                 'clientSecret' => '',
-                'isProductionMode' => false
+                'isProductionMode' => false,
             ];
             $config->defaults($config['payum.default_options']);
 
@@ -38,6 +38,7 @@ class GoPayPaymentGatewayFactory extends GatewayFactory
 
             $config['payum.api'] = function (ArrayObject $config) {
                 $config->validateNotEmpty($config['payum.required_options']);
+
                 return [
                     'goid' => $config['goid'],
                     'clientId' => $config['clientId'],
@@ -45,7 +46,7 @@ class GoPayPaymentGatewayFactory extends GatewayFactory
                     'isProductionMode' => $config['isProductionMode'],
                     'scope' => TokenScope::ALL,
                     'language' => Language::ENGLISH,
-                    'timeout' => 30
+                    'timeout' => 30,
                 ];
             };
         }

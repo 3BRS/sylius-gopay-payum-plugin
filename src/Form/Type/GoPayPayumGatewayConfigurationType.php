@@ -28,7 +28,7 @@ final class GoPayPayumGatewayConfigurationType extends AbstractType
                     new NotBlank([
                         'message' => 'threebrs.gopay_payum_plugin.gateway_configuration.goid.not_blank',
                         'groups' => ['sylius'],
-                    ])
+                    ]),
                 ],
             ])
             ->add('clientId', TextType::class, [
@@ -37,7 +37,7 @@ final class GoPayPayumGatewayConfigurationType extends AbstractType
                     new NotBlank([
                         'message' => 'threebrs.gopay_payum_plugin.gateway_configuration.client_id.not_blank',
                         'groups' => ['sylius'],
-                    ])
+                    ]),
                 ],
             ])
             ->add('clientSecret', TextType::class, [
@@ -46,7 +46,7 @@ final class GoPayPayumGatewayConfigurationType extends AbstractType
                     new NotBlank([
                         'message' => 'threebrs.gopay_payum_plugin.gateway_configuration.client_secret.not_blank',
                         'groups' => ['sylius'],
-                    ])
+                    ]),
                 ],
             ]);
     }

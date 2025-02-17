@@ -6,7 +6,9 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
-        "sylius/sylius": "1.11.*"
+        "sylius/sylius": "1.11.*",
+        "webmozart/assert": "^1.11",
+        "gopay/payments-sdk-php": "^1.7"
     },
     "require-dev": {
         "behat/behat": "^3.9.0",
@@ -39,7 +41,8 @@
         "symfony/http-foundation": "^5.4",
         "symfony/http-kernel": "^5.4",
         "symfony/intl": "^5.4",
-        "symfony/web-profiler-bundle": "^5.4"
+        "symfony/web-profiler-bundle": "^5.4",
+        "symfony/runtime": "^6.4"
     },
     "conflict": {
         "doctrine/annotations": ">=2.0.0",
@@ -78,7 +81,8 @@
         "allow-plugins": {
             "dealerdirect/phpcodesniffer-composer-installer": true,
             "phpstan/extension-installer": true,
-            "symfony/flex": true
+            "symfony/flex": true,
+            "symfony/runtime": true
         }
     },
     "scripts": {

@@ -8,7 +8,7 @@ use GoPay\Api;
 use GoPay\Http\Response;
 use GoPay\Payments;
 
-final class GoPayPayumApiPayum implements GoPayApiPayumInterface
+final class GoPayApi implements GoPayApiInterface
 {
     private Payments $gopay;
 
@@ -16,16 +16,15 @@ final class GoPayPayumApiPayum implements GoPayApiPayumInterface
         string $goId,
         string $clientId,
         string $clientSecret,
-        bool   $isProductionMode,
-        string $language
-    ): void
-    {
+        bool $isProductionMode,
+        string $language,
+    ): void {
         $this->gopay = Api::payments([
             'goid' => $goId,
             'clientId' => $clientId,
             'clientSecret' => $clientSecret,
             'isProductionMode' => $isProductionMode,
-            'language' => $language
+            'language' => $language,
         ]);
     }
 

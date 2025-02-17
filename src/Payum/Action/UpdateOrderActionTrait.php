@@ -5,31 +5,31 @@ declare(strict_types=1);
 namespace ThreeBRS\GoPayPayumPlugin\Payum\Action;
 
 use Payum\Core\Bridge\Spl\ArrayObject;
-use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiPayumInterface;
+use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiInterface;
 
 trait UpdateOrderActionTrait
 {
-    private function updateExistingOrder(GoPayApiPayumInterface $gopayApi, mixed $request, ArrayObject $model): void
+    private function updateExistingOrder(GoPayApiInterface $gopayApi, mixed $request, ArrayObject $model): void
     {
         $response = $gopayApi->retrieve($model['externalPaymentId']);
 
-        if (GoPayApiPayumInterface::PAID === $response->json['state']) {
+        if (GoPayApiInterface::PAID === $response->json['state']) {
             $model['gopayStatus'] = $response->json['state'];
             $request->setModel($model);
         }
 
-        if (GoPayApiPayumInterface::CANCELED === $response->json['state']) {
+        if (GoPayApiInterface::CANCELED === $response->json['state']) {
             $model['gopayStatus'] = $response->json['state'];
             $request->setModel($model);
         }
 
-        if (GoPayApiPayumInterface::TIMEOUTED === $response->json['state']) {
+        if (GoPayApiInterface::TIMEOUTED === $response->json['state']) {
             $model['gopayStatus'] = $response->json['state'];
             $request->setModel($model);
         }
 
-        if (GoPayApiPayumInterface::CREATED === $response->json['state']) {
-            $model['gopayStatus'] = GoPayApiPayumInterface::CANCELED;
+        if (GoPayApiInterface::CREATED === $response->json['state']) {
+            $model['gopayStatus'] = GoPayApiInterface::CANCELED;
             $request->setModel($model);
         }
     }

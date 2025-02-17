@@ -9,7 +9,7 @@ use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetStatusInterface;
-use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiPayumInterface;
+use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiInterface;
 
 class StatusAction implements ActionInterface
 {
@@ -18,25 +18,30 @@ class StatusAction implements ActionInterface
         RequestNotSupportedException::assertSupports($this, $request);
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
-        $status = isset($model['gopayStatus']) ? $model['gopayStatus'] : null;
+        $status = $model['gopayStatus']
+            ?? null;
 
-        if ((null === $status || GoPayApiPayumInterface::CREATED === $status) && false === isset($model['orderId'])) {
+        if ((null === $status || GoPayApiInterface::CREATED === $status) && !isset($model['orderId'])) {
             $request->markNew();
+
             return;
         }
 
-        if (GoPayApiPayumInterface::CANCELED === $status) {
+        if (GoPayApiInterface::CANCELED === $status) {
             $request->markCanceled();
+
             return;
         }
 
-        if (GoPayApiPayumInterface::TIMEOUTED === $status) {
+        if (GoPayApiInterface::TIMEOUTED === $status) {
             $request->markCanceled();
+
             return;
         }
 
-        if (GoPayApiPayumInterface::PAID === $status) {
+        if (GoPayApiInterface::PAID === $status) {
             $request->markCaptured();
+
             return;
         }
 

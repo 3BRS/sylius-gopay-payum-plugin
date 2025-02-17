@@ -15,6 +15,7 @@ use Payum\Core\Request\Capture;
 use Payum\Core\Security\TokenInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use ThreeBRS\GoPayPayumPlugin\Payum\GoPayPayumRequest;
+use Webmozart\Assert\Assert;
 
 final class CaptureAction implements ActionInterface, GatewayAwareInterface
 {
@@ -24,11 +25,10 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        $model = $request->getModel();
-        ArrayObject::ensureArrayObject($model);
+        $model = ArrayObject::ensureArrayObject($request->getModel());
 
-        /** @var OrderInterface $order */
         $order = $request->getFirstModel()->getOrder();
+        Assert::isInstanceOf($order, OrderInterface::class);
         $model['customer'] = $order->getCustomer();
         $model['locale'] = $this->fallbackLocaleCode($order->getLocaleCode());
 
@@ -38,7 +38,8 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface
     #[Pure]
     public function supports(mixed $request): bool
     {
-        return $request instanceof Capture && $request->getModel() instanceof ArrayAccess;
+        return $request instanceof Capture &&
+               $request->getModel() instanceof ArrayAccess;
     }
 
     private function createRequest(TokenInterface $token, ArrayObject $model): GoPayPayumRequest

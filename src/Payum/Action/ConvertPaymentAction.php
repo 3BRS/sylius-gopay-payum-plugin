@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace ThreeBRS\GoPayPayumPlugin\Payum\Action;
 
-use JetBrains\PhpStorm\Pure;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
@@ -12,7 +11,8 @@ use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
-use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiPayumInterface;
+use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiInterface;
+use Webmozart\Assert\Assert;
 
 final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
 {
@@ -22,30 +22,27 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        /** @var PaymentInterface $payment */
         $payment = $request->getSource();
+        Assert::isInstanceOf($payment, PaymentInterface::class);
+
         $details = ArrayObject::ensureArrayObject($payment->getDetails());
 
         $details['totalAmount'] = $payment->getTotalAmount();
         $details['currencyCode'] = $payment->getCurrencyCode();
-        $details['extOrderId'] = uniqid($payment->getNumber());
+        $details['extOrderId'] = $payment->getNumber();
+        $details['number'] = $payment->getNumber() . date('His');
         $details['description'] = $payment->getDescription();
         $details['client_email'] = $payment->getClientEmail();
         $details['client_id'] = $payment->getClientId();
-        $details['customerIp'] = $this->customerIp();
-        $details['status'] = GoPayApiPayumInterface::CREATED;
+        $details['status'] = GoPayApiInterface::CREATED;
 
-        $request->setResult((array)$details);
+        $request->setResult((array) $details);
     }
 
-    #[Pure]
     public function supports(mixed $request): bool
     {
-        return $request instanceof Convert && $request->getSource() instanceof PaymentInterface && 'array' === $request->getTo();
-    }
-
-    private function customerIp(): ?string
-    {
-        return $_SERVER['REMOTE_ADDR'] ?? null;
+        return $request instanceof Convert &&
+               $request->getSource() instanceof PaymentInterface &&
+               'array' === $request->getTo();
     }
 }
