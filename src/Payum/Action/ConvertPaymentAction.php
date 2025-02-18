@@ -17,6 +17,11 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
 {
     use GatewayAwareTrait;
 
+    /**
+     * De facto a callback processed on @see Convert "request" (event).
+     *
+     * Those details are used as payload for GoPay API later and also saved as @see PaymentInterface::getDetails()
+     */
     public function execute(mixed $request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);

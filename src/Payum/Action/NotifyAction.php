@@ -10,7 +10,6 @@ use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Bridge\Spl\ArrayObject as PayumArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Reply\HttpResponse;
 use Payum\Core\Request\Notify;
@@ -24,21 +23,14 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
     use GatewayAwareTrait;
     use UpdateOrderActionTrait;
 
-    /**
-     * @var array{
-     *     goid: string,
-     *     clientId: string,
-     *     clientSecret: string,
-     *     isProductionMode: bool
-     * }|array{}
-     */
-    private array $api = [];
-
     public function __construct(
         private GoPayApiInterface $goPayApi,
     ) {
     }
 
+    /**
+     * De facto a callback processed on @see Notify "request" (event), triggered by GoPay calling eshop URL.
+     */
     public function execute(mixed $request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
@@ -49,7 +41,7 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
         $payment = $request->getFirstModel();
         Assert::isInstanceOf($payment, PaymentInterface::class);
 
-        $this->authorizeGoPayAction($model);
+        $this->authorizeGoPayAction($model, $this->goPayApi);
 
         try {
             $this->updateExistingOrder($this->goPayApi, $request, $model);
@@ -63,18 +55,5 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
     public function supports(mixed $request): bool
     {
         return $request instanceof Notify && $request->getModel() instanceof ArrayObject;
-    }
-
-    public function setApi(mixed $api): void
-    {
-        if (!is_array($api)) {
-            throw new UnsupportedApiException('Not supported.');
-        }
-        Assert::keyExists($api, 'goid');
-        Assert::keyExists($api, 'clientId');
-        Assert::keyExists($api, 'clientSecret');
-        Assert::keyExists($api, 'isProductionMode');
-
-        $this->api = $api;
     }
 }

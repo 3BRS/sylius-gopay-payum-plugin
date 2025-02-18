@@ -12,7 +12,6 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\Payum;
 use Payum\Core\Reply\HttpRedirect;
-use Payum\Core\Request\Generic;
 use Payum\Core\Security\TokenInterface;
 use Payum\Core\Storage\IdentityInterface;
 use RuntimeException;
@@ -46,10 +45,10 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        \assert($request instanceof Generic);
+        \assert($request instanceof GoPayPayumRequest);
         $model = PayumArrayObject::ensureArrayObject($request->getModel());
 
-        $this->authorizeGoPayAction($model);
+        $this->authorizeGoPayAction($model, $this->goPayApi);
 
         if (null !== $model['orderId'] && null !== $model['externalPaymentId']) {
             $this->updateExistingOrder($this->goPayApi, $request, $model);

@@ -6,6 +6,9 @@ namespace ThreeBRS\SyliusGoPayPayumPlugin\Payum;
 
 use Payum\Core\Request\Generic;
 
+/**
+ * Processed by @see GoPayAction::execute
+ */
 class GoPayPayumRequest extends Generic
 {
 }
