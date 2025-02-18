@@ -47,6 +47,7 @@
     },
     "conflict": {
         "api-platform/core": "<2.7.0",
+        "babdev/pagerfanta-bundle": "<3.7.0",
         "doctrine/annotations": ">=2.0.0",
         "doctrine/collections": "<1.7.0",
         "doctrine/dbal": "<2.13.3",
@@ -60,8 +61,10 @@
         "sylius/grid-bundle": "<1.11.0",
         "sylius/resource-bundle": "<1.10.0",
         "symfony/css-selector": "<4.4.24",
+        "symfony/dom-crawler": "<5.4.0",
         "symfony/mime": "<5.4.0",
         "symfony/web-link": "<5.3.0",
+        "symfony/var-dumper": "<5.4.0",
         "symplify/easy-coding-standard": "<10.2.0",
         "twig/twig": "<2.14.7",
         "webmozart/assert": "<1.11.0",

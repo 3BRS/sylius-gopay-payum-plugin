@@ -4,17 +4,7 @@ includes:
 
 parameters:
     symfony:
-        container_xml_path: tests/Application/var/cache/test/Tests_ThreeBRS_GoPayPayumPlugin_KernelTestDebugContainer.xml
+        container_xml_path: tests/Application/var/cache/test/Tests_ThreeBRS_SyliusGoPayPayumPlugin_KernelTestDebugContainer.xml
 
     excludePaths:
-        # Too slow
-        - 'src/DependencyInjection/Configuration.php'
-
-        # Test dependencies
-        - '*/tests/Application/var/*'
-
-        - 'src/Migrations/'
         - 'tests/'
-
-    ignoreErrors:
-        - identifier: missingType.generics

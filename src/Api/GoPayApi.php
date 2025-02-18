@@ -28,6 +28,9 @@ final class GoPayApi implements GoPayApiInterface
         ]);
     }
 
+    /**
+     * @param array<string, mixed> $order
+     */
     public function create(array $order): Response
     {
         return $this->gopay->createPayment($order);

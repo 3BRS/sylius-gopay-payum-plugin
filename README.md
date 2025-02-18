@@ -3,6 +3,16 @@
     <a href="https://www.gopay.com" title="GoPay" target="_blank"><img src="https://dl.dropboxusercontent.com/s/af8fiebcqmk9wgm/GoPay-logo-varianta-A-PANTONE.png" width="300" /></a>
 </div>
 
+<a href="https://packagist.org/packages/3brs/sylius-gopay-payum-plugin" title="License" target="_blank">
+    <img src="https://img.shields.io/packagist/l/3brs/sylius-gopay-payum-plugin.svg" />
+</a>
+<a href="https://packagist.org/packages/3brs/sylius-gopay-payum-plugin" title="Version" target="_blank">
+    <img src="https://img.shields.io/packagist/v/3brs/sylius-gopay-payum-plugin.svg" />
+</a>
+<a href="https://circleci.com/gh/3BRS/sylius-gopay-payum-plugin" title="Build status" target="_blank">
+    <img src="https://circleci.com/gh/3BRS/sylius-gopay-payum-plugin.svg?style=shield" />
+</a>
+
 ## Installation
 Until pull request is merged, require it this way:
 ```bash

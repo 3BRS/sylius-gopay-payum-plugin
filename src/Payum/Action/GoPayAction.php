@@ -12,11 +12,13 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\Payum;
 use Payum\Core\Reply\HttpRedirect;
+use Payum\Core\Request\Generic;
 use Payum\Core\Security\TokenInterface;
 use Payum\Core\Storage\IdentityInterface;
 use RuntimeException;
 use Sylius\Component\Core\Model\CustomerInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\UpdateOrderActionTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPayumRequest;
 use Webmozart\Assert\Assert;
 
@@ -24,6 +26,14 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
 {
     use UpdateOrderActionTrait;
 
+    /**
+     * @var array{
+     *     goid: string,
+     *     clientId: string,
+     *     clientSecret: string,
+     *     isProductionMode: bool,
+     * }|array{}
+     */
     private array $api = [];
 
     public function __construct(
@@ -36,20 +46,18 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        $goId = $this->api['goid'];
-        $clientId = $this->api['clientId'];
-        $clientSecret = $this->api['clientSecret'];
-        $isProductionMode = $this->api['isProductionMode'];
-
+        \assert($request instanceof Generic);
         $model = PayumArrayObject::ensureArrayObject($request->getModel());
 
-        $this->goPayApi->authorize($goId, $clientId, $clientSecret, $isProductionMode, $model['locale']);
+        $this->authorizeGoPayAction($model);
 
         if (null !== $model['orderId'] && null !== $model['externalPaymentId']) {
             $this->updateExistingOrder($this->goPayApi, $request, $model);
         } else {
             $token = $request->getToken();
-            $order = $this->prepareOrder($token, $model, $goId);
+            \assert($token instanceof TokenInterface);
+            \assert($this->api !== []);
+            $order = $this->prepareOrder($token, $model, $this->api['goid']);
             $response = $this->goPayApi->create($order);
 
             if (!isset($response->json['errors']) && GoPayApiInterface::CREATED === $response->json['state']) {
@@ -79,6 +87,9 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         $this->api = $api;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function prepareOrder(
         TokenInterface $token,
         PayumArrayObject $model,
@@ -121,9 +132,14 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         return $order;
     }
 
+    /**
+     * @return array<array{name: mixed, amount: mixed}>|array{}
+     */
     private function resolveProducts(PayumArrayObject $model): array
     {
-        if (false === $model->offsetExists('items') || 0 === count($model['items'])) {
+        if (false === $model->offsetExists('items') ||
+            (is_countable($model['items']) && 0 === count($model['items']))
+        ) {
             return [
                 [
                     'name' => $model['description'],

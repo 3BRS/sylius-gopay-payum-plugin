@@ -12,7 +12,6 @@ use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Model\PaymentInterface;
 use Payum\Core\Request\Convert;
 use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
-use Webmozart\Assert\Assert;
 
 final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterface
 {
@@ -22,8 +21,9 @@ final class ConvertPaymentAction implements ActionInterface, GatewayAwareInterfa
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
+        \assert($request instanceof Convert);
         $payment = $request->getSource();
-        Assert::isInstanceOf($payment, PaymentInterface::class);
+        \assert($payment instanceof PaymentInterface);
 
         $details = ArrayObject::ensureArrayObject($payment->getDetails());
 

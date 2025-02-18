@@ -26,18 +26,21 @@ class GoPayPaymentGatewayFactory extends GatewayFactory
         ]);
 
         if (!$config['payum.api']) {
-            $config['payum.default_options'] = [
+            $defaultOptions = [
                 'goid' => '',
                 'clientId' => '',
                 'clientSecret' => '',
                 'isProductionMode' => false,
             ];
-            $config->defaults($config['payum.default_options']);
+            $config['payum.default_options'] = $defaultOptions;
+            $config->defaults($defaultOptions);
 
             $config['payum.required_options'] = ['goid', 'clientId', 'clientSecret'];
 
-            $config['payum.api'] = function (ArrayObject $config) {
-                $config->validateNotEmpty($config['payum.required_options']);
+            $config['payum.api'] = static function (ArrayObject $config) {
+                $requiredOptions = $config['payum.required_options'];
+                assert(is_array($requiredOptions));
+                $config->validateNotEmpty($requiredOptions);
 
                 return [
                     'goid' => $config['goid'],
