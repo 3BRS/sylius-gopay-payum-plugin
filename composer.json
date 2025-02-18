@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
-        "sylius/sylius": "1.12.*",
+        "sylius/sylius": "1.12.*|1.13.*",
         "webmozart/assert": "^1.11",
         "gopay/payments-sdk-php": "^1.7"
     },
