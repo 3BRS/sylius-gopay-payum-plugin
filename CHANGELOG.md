@@ -1,3 +1,9 @@
+# 2.0
+
+- Add **refund**
+- Add support for Sylius 1.12, 1.13, Symfony 6
+- Drop support for Sylius <=1.11
+
 # 1.0
 
 - Add support for Sylius 1.11, PHP 8.0

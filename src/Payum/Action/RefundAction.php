@@ -4,43 +4,50 @@ declare(strict_types=1);
 
 namespace ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action;
 
-use ArrayAccess;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
+use Payum\Core\Bridge\Spl\ArrayObject as PayumArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareInterface;
 use Payum\Core\GatewayAwareTrait;
-use Payum\Core\Request\Capture;
+use Payum\Core\Request\Refund;
 use Payum\Core\Security\TokenInterface;
-use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
+use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\ParseFallbackLocaleCodeTrait;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\UpdateOrderActionTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPayumRequest;
-use Webmozart\Assert\Assert;
 
-final class CaptureAction implements ActionInterface, GatewayAwareInterface
+final class RefundAction implements ActionInterface, GatewayAwareInterface
 {
     use GatewayAwareTrait;
+    use UpdateOrderActionTrait;
     use ParseFallbackLocaleCodeTrait;
 
-    public const CAPTURE_ACTION = 'capture';
+    public const REFUND_ACTION = 'refund';
+
+    public function __construct(
+        private GoPayApiInterface $goPayApi,
+    ) {
+    }
 
     /**
-     * De facto a callback processed on @see Capture request.
+     * De facto a callback processed on @see Refund request.
      */
-    public function execute(mixed $request): void
+    public function execute($request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        \assert($request instanceof Capture);
-        $model = ArrayObject::ensureArrayObject($request->getModel());
+        \assert($request instanceof Refund);
+        $model = PayumArrayObject::ensureArrayObject($request->getModel());
 
         $payment = $request->getFirstModel();
         \assert($payment instanceof PaymentInterface);
-        $order = $payment->getOrder();
-        Assert::isInstanceOf($order, OrderInterface::class);
-        $model['customer'] = $order->getCustomer();
-        $localeCode = $order->getLocaleCode();
+        $model['amount'] = $payment->getAmount();
+
+        $this->authorizeGoPayAction($model, $this->goPayApi);
+
+        $localeCode = $payment->getOrder()?->getLocaleCode();
         \assert($localeCode !== null);
         $model['locale'] = $this->parseFallbackLocaleCode($localeCode);
 
@@ -49,10 +56,11 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface
         $this->gateway->execute($this->createRequest($token, $model));
     }
 
-    public function supports(mixed $request): bool
+    public function supports($request): bool
     {
-        return $request instanceof Capture &&
-               $request->getModel() instanceof ArrayAccess;
+        return
+            $request instanceof Refund &&
+            $request->getModel() instanceof \ArrayAccess;
     }
 
     private function createRequest(
@@ -61,7 +69,7 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface
     ): GoPayPayumRequest {
         $goPayPayumRequest = new GoPayPayumRequest($token);
         $goPayPayumRequest->setModel($model);
-        $goPayPayumRequest->setTriggeringAction(self::CAPTURE_ACTION);
+        $goPayPayumRequest->setTriggeringAction(self::REFUND_ACTION);
 
         return $goPayPayumRequest;
     }

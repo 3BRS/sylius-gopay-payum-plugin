@@ -49,6 +49,11 @@ trait UpdateOrderActionTrait
             $request->setModel($model);
         }
 
+        if (GoPayApiInterface::REFUNDED === $response->json['state']) {
+            $model['gopayStatus'] = $response->json['state'];
+            $request->setModel($model);
+        }
+
         if (GoPayApiInterface::CANCELED === $response->json['state']) {
             $model['gopayStatus'] = $response->json['state'];
             $request->setModel($model);

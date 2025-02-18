@@ -28,7 +28,6 @@ workflows:
                                     - "8.3"
                                 sylius_version:
                                     - "1.12"
-                                    - "1.13"
                                 symfony_version:
                                     - "6.1"
                                     - "6.2"
