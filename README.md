@@ -16,13 +16,13 @@
 ## Installation
 Until pull request is merged, require it this way:
 ```bash
-composer require 3brs/gopay-payum-plugin
+composer require 3brs/sylius-gopay-payum-plugin
 ```
 
 Add plugin dependencies to your bundles.php file:
 
 ```php
-ThreeBRS\GoPayPaymPlugin\GoPayPayumPlugin::class => ['all' => true]
+ThreeBRS\SyliusGoPayPayumPlugin\SyliusGoPayPayumPlugin::class => ['all' => true]
 ```
 
 ## Usage

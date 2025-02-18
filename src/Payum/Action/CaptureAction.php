@@ -14,13 +14,18 @@ use Payum\Core\Request\Capture;
 use Payum\Core\Security\TokenInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\ParseFallbackLocaleCodeTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPayumRequest;
 use Webmozart\Assert\Assert;
 
 final class CaptureAction implements ActionInterface, GatewayAwareInterface
 {
     use GatewayAwareTrait;
+    use ParseFallbackLocaleCodeTrait;
 
+    /**
+     * De facto a callback processed on @see Capture request.
+     */
     public function execute(mixed $request): void
     {
         RequestNotSupportedException::assertSupports($this, $request);
@@ -35,7 +40,7 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface
         $model['customer'] = $order->getCustomer();
         $localeCode = $order->getLocaleCode();
         \assert($localeCode !== null);
-        $model['locale'] = $this->fallbackLocaleCode($localeCode);
+        $model['locale'] = $this->parseFallbackLocaleCode($localeCode);
 
         $token = $request->getToken();
         \assert($token instanceof TokenInterface);
@@ -48,16 +53,13 @@ final class CaptureAction implements ActionInterface, GatewayAwareInterface
                $request->getModel() instanceof ArrayAccess;
     }
 
-    private function createRequest(TokenInterface $token, ArrayObject $model): GoPayPayumRequest
-    {
+    private function createRequest(
+        TokenInterface $token,
+        ArrayObject $model,
+    ): GoPayPayumRequest {
         $goPayPayumRequest = new GoPayPayumRequest($token);
         $goPayPayumRequest->setModel($model);
 
         return $goPayPayumRequest;
-    }
-
-    private function fallbackLocaleCode(string $localeCode): string
-    {
-        return explode('_', $localeCode)[0];
     }
 }

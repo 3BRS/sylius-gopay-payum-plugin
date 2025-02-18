@@ -21,6 +21,16 @@ services:
             - { name: 'sylius.gateway_configuration_type', type: 'gopay', label: 'threebrs.gopay_payum_plugin.gateway_label' }
             - { name: 'form.type' }
 
+    threebrs.gopay_payum.action.capture:
+        class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\CaptureAction
+        tags:
+            - { name: 'payum.action', factory: 'gopay' }
+
+    threebrs.gopay_payum.action.convert_payment:
+        class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\ConvertPaymentAction
+        tags:
+            - { name: 'payum.action', factory: 'gopay' }
+
     threebrs.gopay_payum.action.gopay:
         class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\GoPayAction
         arguments:
@@ -33,5 +43,10 @@ services:
         class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\NotifyAction
         arguments:
             - '@threebrs.gopay_payum.api'
+        tags:
+            - { name: 'payum.action', factory: 'gopay' }
+
+    threebrs.gopay_payum.action.status:
+        class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\StatusAction
         tags:
             - { name: 'payum.action', factory: 'gopay' }
