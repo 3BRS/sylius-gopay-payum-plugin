@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin\Payum;
+namespace ThreeBRS\SyliusGoPayPayumPlugin\Payum;
 
 use Payum\Core\Request\Generic;
 

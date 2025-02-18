@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin\Payum\Action;
+namespace ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action;
 
 use ArrayObject;
 use Exception;
@@ -15,7 +15,7 @@ use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Reply\HttpResponse;
 use Payum\Core\Request\Notify;
 use Sylius\Component\Core\Model\PaymentInterface;
-use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiInterface;
+use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
 use Webmozart\Assert\Assert;
 
 final class NotifyAction implements ActionInterface, ApiAwareInterface

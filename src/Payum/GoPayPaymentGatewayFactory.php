@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin\Payum;
+namespace ThreeBRS\SyliusGoPayPayumPlugin\Payum;
 
 use GoPay\Definition\Language;
 use GoPay\Definition\TokenScope;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\GatewayFactory;
-use ThreeBRS\GoPayPayumPlugin\Payum\Action\CaptureAction;
-use ThreeBRS\GoPayPayumPlugin\Payum\Action\ConvertPaymentAction;
-use ThreeBRS\GoPayPayumPlugin\Payum\Action\StatusAction;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\CaptureAction;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\ConvertPaymentAction;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\StatusAction;
 
 class GoPayPaymentGatewayFactory extends GatewayFactory
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin\Payum\Action;
+namespace ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action;
 
 use ArrayAccess;
 use JetBrains\PhpStorm\Pure;
@@ -14,7 +14,7 @@ use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Request\Capture;
 use Payum\Core\Security\TokenInterface;
 use Sylius\Component\Core\Model\OrderInterface;
-use ThreeBRS\GoPayPayumPlugin\Payum\GoPayPayumRequest;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPayumRequest;
 use Webmozart\Assert\Assert;
 
 final class CaptureAction implements ActionInterface, GatewayAwareInterface

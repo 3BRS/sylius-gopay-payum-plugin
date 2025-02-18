@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin\Payum\Action;
+namespace ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action;
 
 use ArrayObject;
 use Payum\Core\Action\ActionInterface;
@@ -16,8 +16,8 @@ use Payum\Core\Security\TokenInterface;
 use Payum\Core\Storage\IdentityInterface;
 use RuntimeException;
 use Sylius\Component\Core\Model\CustomerInterface;
-use ThreeBRS\GoPayPayumPlugin\Api\GoPayApiInterface;
-use ThreeBRS\GoPayPayumPlugin\Payum\GoPayPayumRequest;
+use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPayumRequest;
 use Webmozart\Assert\Assert;
 
 class GoPayAction implements ApiAwareInterface, ActionInterface

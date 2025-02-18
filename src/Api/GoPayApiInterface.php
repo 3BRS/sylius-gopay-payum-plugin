@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace ThreeBRS\GoPayPayumPlugin\Api;
+namespace ThreeBRS\SyliusGoPayPayumPlugin\Api;
 
 use GoPay\Http\Response;
 

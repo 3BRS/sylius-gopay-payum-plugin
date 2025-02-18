@@ -15,7 +15,7 @@ default:
         FriendsOfBehat\SymfonyExtension:
             bootstrap: tests/Application/config/bootstrap.php
             kernel:
-                class: Tests\MangoSylius\ExtendedChannelsPlugin\Kernel
+                class: Tests\ThreeBRS\SyliusGoPayPayumPlugin\Kernel
 
         FriendsOfBehat\VariadicExtension: ~
 
