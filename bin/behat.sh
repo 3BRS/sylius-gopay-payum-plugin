@@ -9,4 +9,4 @@ cd "$(dirname "$DIR")"
 mkdir -p tests/Application/public/media/image
 
 set -x
-APP_ENV="test" php -d memory_limit=1G vendor/bin/behat "$@"
+APP_ENV="test" php -d error_reporting="E_ALL ^ E_DEPRECATED" -d memory_limit=1G vendor/bin/behat "$@"

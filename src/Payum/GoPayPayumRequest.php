@@ -11,4 +11,15 @@ use Payum\Core\Request\Generic;
  */
 class GoPayPayumRequest extends Generic
 {
+    private ?string $triggeringAction = null;
+
+    public function setTriggeringAction(string $triggeringAction): void
+    {
+        $this->triggeringAction = $triggeringAction;
+    }
+
+    public function getTriggeringAction(): ?string
+    {
+        return $this->triggeringAction;
+    }
 }

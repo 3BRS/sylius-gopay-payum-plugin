@@ -46,6 +46,13 @@ services:
         tags:
             - { name: 'payum.action', factory: 'gopay' }
 
+    threebrs.gopay_payum.action.refund:
+        class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\RefundAction
+        arguments:
+            - '@threebrs.gopay_payum.api'
+        tags:
+            - { name: 'payum.action', factory: 'gopay' }
+
     threebrs.gopay_payum.action.status:
         class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\StatusAction
         tags:

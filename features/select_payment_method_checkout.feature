@@ -8,7 +8,6 @@ Feature: Select GoPay payment method in checkout
 		Given the store operates on a single channel in "United States"
 		And the store has a product "PHP T-Shirt" priced at "$19.99"
 		And the store ships everywhere for free
-		And the store allows paying with "GoPay"
 	    And the store allows paying with name "GoPay" and code "gopay" GoPay gateway
 		And I am a logged in customer
 

@@ -50,25 +50,82 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
 
         $this->authorizeGoPayAction($model, $this->goPayApi);
 
-        if (null !== $model['orderId'] && null !== $model['externalPaymentId']) {
-            $this->updateExistingOrder($this->goPayApi, $request, $model);
-        } else {
-            $token = $request->getToken();
-            \assert($token instanceof TokenInterface);
-            \assert($this->api !== []);
-            $order = $this->prepareOrder($token, $model, $this->api['goid']);
-            $response = $this->goPayApi->create($order);
+        switch ($request->getTriggeringAction()) {
+            case CaptureAction::CAPTURE_ACTION:
+                $this->processCapture($request, $model);
 
-            if (!isset($response->json['errors']) && GoPayApiInterface::CREATED === $response->json['state']) {
-                $model['orderId'] = $response->json['order_number'];
-                $model['externalPaymentId'] = $response->json['id'];
-                $request->setModel($model);
+                return;
+            case RefundAction::REFUND_ACTION:
+                $this->processRefund($request, $model);
 
-                throw new HttpRedirect($response->json['gw_url']);
-            }
-
-            throw new RuntimeException('GoPay error: ' . $response->__toString());
+                return;
+            default:
+                throw new RuntimeException('Unknown triggering action ' . $request->getTriggeringAction());
         }
+    }
+
+    private function processRefund(
+        GoPayPayumRequest $request,
+        PayumArrayObject $model,
+    ): void {
+        if (null === $model['orderId'] || null === $model['externalPaymentId']) {
+            throw new RuntimeException('Order ID or external payment ID is missing.');
+        }
+
+        $response = $this->goPayApi->refund(
+            $this->getExternalPaymentId($model),
+            $this->getAmount($model),
+        );
+
+        if (!isset($response->json['errors']) && GoPayApiInterface::REFUNDED === $response->json['state']) {
+            $model['refundId'] = $response->json['id'];
+            $request->setModel($model);
+
+            throw new HttpRedirect($response->json['gw_url']);
+        }
+
+        throw new RuntimeException('GoPay error: ' . $response->__toString());
+    }
+
+    private function getAmount(PayumArrayObject $model): int
+    {
+        $externalPaymentId = $model['amount'];
+        assert(is_numeric($externalPaymentId));
+
+        return (int) $externalPaymentId;
+    }
+
+    private function processCapture(
+        GoPayPayumRequest $request,
+        PayumArrayObject $model,
+    ): void {
+        if (null === $model['orderId'] || null === $model['externalPaymentId']) {
+            $this->createNewOrder($request, $model);
+
+            return;
+        }
+        $this->updateExistingOrder($this->goPayApi, $request, $model);
+    }
+
+    private function createNewOrder(
+        GoPayPayumRequest $request,
+        PayumArrayObject $model,
+    ): void {
+        $token = $request->getToken();
+        \assert($token instanceof TokenInterface);
+        \assert($this->api !== []);
+        $order = $this->prepareOrder($token, $model, $this->api['goid']);
+        $response = $this->goPayApi->create($order);
+
+        if (!isset($response->json['errors']) && GoPayApiInterface::CREATED === $response->json['state']) {
+            $model['orderId'] = $response->json['order_number'];
+            $model['externalPaymentId'] = $response->json['id'];
+            $request->setModel($model);
+
+            throw new HttpRedirect($response->json['gw_url']);
+        }
+
+        throw new RuntimeException('GoPay error: ' . $response->__toString());
     }
 
     public function supports(mixed $request): bool

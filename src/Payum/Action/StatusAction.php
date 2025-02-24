@@ -30,6 +30,12 @@ class StatusAction implements ActionInterface
             return;
         }
 
+        if (GoPayApiInterface::REFUNDED === $status) {
+            $request->markRefunded();
+
+            return;
+        }
+
         if (GoPayApiInterface::CANCELED === $status) {
             $request->markCanceled();
 
