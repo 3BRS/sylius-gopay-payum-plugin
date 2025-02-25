@@ -15,6 +15,9 @@ services:
     threebrs.gopay_payum.api:
         class: ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApi
 
+    ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface:
+        alias: threebrs.gopay_payum.api
+
     threebrs.gopay_payum.form.type.gateway_configuration:
         class: ThreeBRS\SyliusGoPayPayumPlugin\Form\Type\GoPayPayumGatewayConfigurationType
         tags:

@@ -4,36 +4,12 @@ declare(strict_types=1);
 
 namespace ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials;
 
-use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\Model\ModelAwareInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
-use Webmozart\Assert\Assert;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\GoPayAction;
 
 trait UpdateOrderActionTrait
 {
-    /**
-     * @var array{
-     *     goid: string,
-     *     clientId: string,
-     *     clientSecret: string,
-     *     isProductionMode: bool
-     * }|array{}
-     */
-    private array $api = [];
-
-    public function setApi(mixed $api): void
-    {
-        if (!is_array($api)) {
-            throw new UnsupportedApiException('Not supported.');
-        }
-        Assert::keyExists($api, 'goid');
-        Assert::keyExists($api, 'clientId');
-        Assert::keyExists($api, 'clientSecret');
-        Assert::keyExists($api, 'isProductionMode');
-
-        $this->api = $api;
-    }
-
     /**
      * @param \ArrayObject<string, string> $model
      */
@@ -75,28 +51,9 @@ trait UpdateOrderActionTrait
      */
     private function getExternalPaymentId(\ArrayObject $model): int
     {
-        $externalPaymentId = $model['externalPaymentId'];
+        $externalPaymentId = $model[GoPayAction::EXTERNAL_PAYMENT_ID];
         assert(is_numeric($externalPaymentId));
 
         return (int) $externalPaymentId;
-    }
-
-    /**
-     * @param \ArrayObject<string, string> $model
-     */
-    private function authorizeGoPayAction(
-        \ArrayAccess $model,
-        GoPayApiInterface $goPayApi,
-    ): void {
-        \assert(is_string($model['locale']));
-        \assert($this->api !== []);
-
-        $goPayApi->authorize(
-            $this->api['goid'],
-            $this->api['clientId'],
-            $this->api['clientSecret'],
-            $this->api['isProductionMode'],
-            $model['locale'],
-        );
     }
 }

@@ -15,6 +15,7 @@ use Payum\Core\Reply\HttpResponse;
 use Payum\Core\Request\Notify;
 use Sylius\Component\Core\Model\PaymentInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\AuthorizeGoPayActionTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\UpdateOrderActionTrait;
 use Webmozart\Assert\Assert;
 
@@ -22,6 +23,7 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
 {
     use GatewayAwareTrait;
     use UpdateOrderActionTrait;
+    use AuthorizeGoPayActionTrait;
 
     public function __construct(
         private GoPayApiInterface $goPayApi,
