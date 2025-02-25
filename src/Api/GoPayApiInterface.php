@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace ThreeBRS\SyliusGoPayPayumPlugin\Api;
 
+use GoPay\Definition\Language;
+use GoPay\Definition\TokenScope;
 use GoPay\Http\Response;
 
 interface GoPayApiInterface
@@ -23,7 +25,10 @@ interface GoPayApiInterface
         string $clientId,
         string $clientSecret,
         bool $isProductionMode,
-        string $language,
+        string $language = Language::ENGLISH,
+        ?string $gatewayUrl = null,
+        string $scope = TokenScope::ALL,
+        int $timeout = 30,
     ): void;
 
     /**
@@ -33,5 +38,8 @@ interface GoPayApiInterface
 
     public function retrieve(int $paymentId): Response;
 
-    public function refund(int $paymentId, int $amount): Response;
+    public function refund(
+        int $paymentId,
+        int $amount,
+    ): Response;
 }
