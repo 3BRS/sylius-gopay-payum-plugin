@@ -17,6 +17,7 @@ use Payum\Core\Storage\IdentityInterface;
 use RuntimeException;
 use Sylius\Component\Core\Model\CustomerInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\AuthorizeGoPayActionTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\UpdateOrderActionTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPayumRequest;
 use Webmozart\Assert\Assert;
@@ -24,6 +25,13 @@ use Webmozart\Assert\Assert;
 class GoPayAction implements ApiAwareInterface, ActionInterface
 {
     use UpdateOrderActionTrait;
+    use AuthorizeGoPayActionTrait;
+
+    public const EXTERNAL_PAYMENT_ID = 'externalPaymentId';
+
+    public const ORDER_ID = 'orderId';
+
+    public const REFUND_ID = 'refundId';
 
     /**
      * @var array{
@@ -68,7 +76,7 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         GoPayPayumRequest $request,
         PayumArrayObject $model,
     ): void {
-        if (null === $model['orderId'] || null === $model['externalPaymentId']) {
+        if (null === $model[self::ORDER_ID] || null === $model[self::EXTERNAL_PAYMENT_ID]) {
             throw new RuntimeException('Order ID or external payment ID is missing.');
         }
 
@@ -78,7 +86,7 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         );
 
         if (!isset($response->json['errors']) && GoPayApiInterface::REFUNDED === $response->json['state']) {
-            $model['refundId'] = $response->json['id'];
+            $model[self::REFUND_ID] = $response->json['id'];
             $request->setModel($model);
 
             throw new HttpRedirect($response->json['gw_url']);
@@ -99,7 +107,7 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         GoPayPayumRequest $request,
         PayumArrayObject $model,
     ): void {
-        if (null === $model['orderId'] || null === $model['externalPaymentId']) {
+        if (null === $model[self::ORDER_ID] || null === $model[self::EXTERNAL_PAYMENT_ID]) {
             $this->createNewOrder($request, $model);
 
             return;
@@ -112,14 +120,14 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         PayumArrayObject $model,
     ): void {
         $token = $request->getToken();
-        \assert($token instanceof TokenInterface);
-        \assert($this->api !== []);
+        assert($token instanceof TokenInterface, 'Payum token is missing');
+        assert($this->api !== [], 'API configuration is missing');
         $order = $this->prepareOrder($token, $model, $this->api['goid']);
         $response = $this->goPayApi->create($order);
 
         if (!isset($response->json['errors']) && GoPayApiInterface::CREATED === $response->json['state']) {
-            $model['orderId'] = $response->json['order_number'];
-            $model['externalPaymentId'] = $response->json['id'];
+            $model[self::ORDER_ID] = $response->json['order_number'];
+            $model[self::EXTERNAL_PAYMENT_ID] = $response->json['id'];
             $request->setModel($model);
 
             throw new HttpRedirect($response->json['gw_url']);

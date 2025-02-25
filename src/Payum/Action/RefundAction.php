@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action;
 
 use Payum\Core\Action\ActionInterface;
+use Payum\Core\ApiAwareInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Bridge\Spl\ArrayObject as PayumArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
@@ -14,14 +15,17 @@ use Payum\Core\Request\Refund;
 use Payum\Core\Security\TokenInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\AuthorizeGoPayActionTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\ParseFallbackLocaleCodeTrait;
-use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\UpdateOrderActionTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPayumRequest;
 
-final class RefundAction implements ActionInterface, GatewayAwareInterface
+final class RefundAction implements
+    ActionInterface,
+    GatewayAwareInterface,
+    ApiAwareInterface
 {
     use GatewayAwareTrait;
-    use UpdateOrderActionTrait;
+    use AuthorizeGoPayActionTrait;
     use ParseFallbackLocaleCodeTrait;
 
     public const REFUND_ACTION = 'refund';
