@@ -96,10 +96,17 @@ jobs:
             -   run: (cd tests/Application && bin/console doctrine:schema:update --force --env=test -vvv)
             -   run: (cd tests/Application && bin/console cache:clear --env=test -vvv)
             -   run: (cd tests/Application && bin/console cache:warmup --env=test -vvv)
-            -   run: APP_ENV=test bin/phpstan.sh
+            -   run:
+                    name: PHPStan
+                    command: |
+                        if [ "<< parameters.sylius_version >>" != "1.13" ]; then
+                            APP_ENV=test bin/phpstan.sh --configuration phpstan-before-sylius.1.13.dist.neon
+                        else
+                            APP_ENV=test bin/phpstan.sh
+                        fi
             -   run: APP_ENV=test bin/ecs.sh --clear-cache
             -   run: APP_ENV=test bin/symfony-lint.sh
-            -   run: APP_ENV=test bin/behat.sh || grep 'console.CRITICAL' tests/Application/var/log/test.log
+            -   run: APP_ENV=test bin/behat.sh
 
             # COMPOSER PREFER DIST #
             -   run: composer update --no-interaction --prefer-dist --no-plugins
@@ -109,7 +116,14 @@ jobs:
             -   run: (cd tests/Application && bin/console doctrine:schema:update --force --env=test -vvv)
             -   run: (cd tests/Application && bin/console cache:clear --env=test -vvv)
             -   run: (cd tests/Application && bin/console cache:warmup --env=test -vvv)
-            -   run: APP_ENV=test bin/phpstan.sh
+            -   run:
+                    name: PHPStan
+                    command: |
+                        if [ "<< parameters.sylius_version >>" != "1.13" ]; then
+                            APP_ENV=test bin/phpstan.sh --configuration phpstan-before-sylius.1.13.dist.neon
+                        else
+                            APP_ENV=test bin/phpstan.sh
+                        fi
             -   run: APP_ENV=test bin/ecs.sh --clear-cache
             -   run: APP_ENV=test bin/symfony-lint.sh
             -   run: APP_ENV=test bin/behat.sh

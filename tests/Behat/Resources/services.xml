@@ -46,5 +46,13 @@
 			</argument>
 		</service>
 
+
+		<service id="Tests\ThreeBRS\SyliusGoPayPayumPlugin\Behat\Context\Setup\OrderContext" class="Tests\ThreeBRS\SyliusGoPayPayumPlugin\Behat\Context\Setup\OrderContext">
+			<argument type="service" id="doctrine.orm.entity_manager" />
+			<argument type="service" id="sm.factory" />
+			<argument type="service" id="threebrs.gopay_payum.payments.factory" />
+			<argument type="service" id="sylius.behat.shared_storage" />
+		</service>
+
 	</services>
 </container>

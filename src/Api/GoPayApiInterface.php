@@ -20,6 +20,13 @@ interface GoPayApiInterface
 
     public const TIMEOUTED = 'TIMEOUTED';
 
+    /**
+     * payment was finalized, for example by a refund
+     *
+     * @noinspection PhpUnused
+     */
+    public const FINISHED = 'FINISHED';
+
     public function authorize(
         string $goId,
         string $clientId,

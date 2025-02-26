@@ -9,7 +9,6 @@ use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Bridge\Spl\ArrayObject as PayumArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
-use Payum\Core\Exception\UnsupportedApiException;
 use Payum\Core\Payum;
 use Payum\Core\Reply\HttpRedirect;
 use Payum\Core\Security\TokenInterface;
@@ -19,7 +18,7 @@ use Sylius\Component\Core\Model\CustomerInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\AuthorizeGoPayActionTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\UpdateOrderActionTrait;
-use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPayumRequest;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\GoPayPayumRequest;
 use Webmozart\Assert\Assert;
 
 class GoPayAction implements ApiAwareInterface, ActionInterface
@@ -32,16 +31,6 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
     public const ORDER_ID = 'orderId';
 
     public const REFUND_ID = 'refundId';
-
-    /**
-     * @var array{
-     *     goid: string,
-     *     clientId: string,
-     *     clientSecret: string,
-     *     isProductionMode: bool,
-     * }|array{}
-     */
-    private array $api = [];
 
     public function __construct(
         private GoPayApiInterface $goPayApi,
@@ -76,8 +65,11 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         GoPayPayumRequest $request,
         PayumArrayObject $model,
     ): void {
-        if (null === $model[self::ORDER_ID] || null === $model[self::EXTERNAL_PAYMENT_ID]) {
-            throw new RuntimeException('Order ID or external payment ID is missing.');
+        if (empty($model[self::ORDER_ID])) {
+            throw new RuntimeException('Order ID is missing.');
+        }
+        if (empty($model[self::EXTERNAL_PAYMENT_ID])) {
+            throw new RuntimeException('External payment ID is missing.');
         }
 
         $response = $this->goPayApi->refund(
@@ -140,15 +132,6 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
     {
         return $request instanceof GoPayPayumRequest &&
                $request->getModel() instanceof ArrayObject;
-    }
-
-    public function setApi(mixed $api): void
-    {
-        if (!is_array($api)) {
-            throw new UnsupportedApiException('Not supported.');
-        }
-
-        $this->api = $api;
     }
 
     /**
