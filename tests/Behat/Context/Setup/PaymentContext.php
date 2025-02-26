@@ -51,10 +51,10 @@ final class PaymentContext implements Context
     ): void {
         $paymentMethod = $this->createPaymentMethod($paymentMethodName, $paymentMethodCode, 'GoPay');
         $paymentMethod->getGatewayConfig()->setConfig([
-            'merchantNumber' => 'TEST',
-            'keyPrivateName' => 'TEST',
-            'keyPrivatePassword' => 'TEST',
-            'sandbox' => true,
+            'goid' => 'TEST',
+            'clientId' => 'TEST',
+            'clientSecret' => 'TEST',
+            'isProductionMode' => false,
         ]);
 
         $this->paymentMethodManager->flush();
