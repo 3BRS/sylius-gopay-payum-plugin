@@ -33,7 +33,7 @@ After the review you will get production credentials, so just change it in Syliu
 #### Add GoPay programatically
 ```mysql
 -- CHANGE the `config` JSON values to your GoPay credentials
-INSERT INTO sylius_gateway_config (config, gateway_name, factory_name) VALUES ('{"sandbox": true, "keyPrivateName": "TEST", "merchantNumber": "TEST", "keyPrivatePassword": "TEST"}', 'gopay', 'gopay');
+INSERT INTO sylius_gateway_config (config, gateway_name, factory_name) VALUES ('{"isProductionMode": false, "goid": "TEST", "clientId": "TEST", "clientSecret": "TEST"}', 'gopay', 'gopay');
 
 INSERT INTO sylius_payment_method (code, environment, is_enabled, position, created_at, updated_at, gateway_config_id)
 VALUES ('gopay', NULL, 1, 0, NOW(), NOW(), (SELECT id FROM sylius_gateway_config WHERE gateway_name = 'gopay'));

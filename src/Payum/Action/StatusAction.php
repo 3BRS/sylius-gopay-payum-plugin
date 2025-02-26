@@ -9,7 +9,6 @@ use Payum\Core\Action\ActionInterface;
 use Payum\Core\Bridge\Spl\ArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Request\GetStatusInterface;
-use Sylius\Bundle\PayumBundle\Request\GetStatus;
 use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
 
 class StatusAction implements ActionInterface
@@ -18,7 +17,7 @@ class StatusAction implements ActionInterface
     {
         RequestNotSupportedException::assertSupports($this, $request);
 
-        assert($request instanceof GetStatus);
+        assert($request instanceof GetStatusInterface);
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
         $status = $model['gopayStatus']
