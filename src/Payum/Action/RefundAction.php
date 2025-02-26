@@ -17,7 +17,7 @@ use Sylius\Component\Core\Model\PaymentInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\AuthorizeGoPayActionTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\ParseFallbackLocaleCodeTrait;
-use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPayumRequest;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\GoPayPayumRequest;
 
 final class RefundAction implements
     ActionInterface,
@@ -49,15 +49,18 @@ final class RefundAction implements
         \assert($payment instanceof PaymentInterface);
         $model['amount'] = $payment->getAmount();
 
-        $this->authorizeGoPayAction($model, $this->goPayApi);
-
         $localeCode = $payment->getOrder()?->getLocaleCode();
         \assert($localeCode !== null);
         $model['locale'] = $this->parseFallbackLocaleCode($localeCode);
 
+        $this->authorizeGoPayAction($model, $this->goPayApi);
+
         $token = $request->getToken();
         \assert($token instanceof TokenInterface);
-        $this->gateway->execute($this->createRequest($token, $model));
+        $this->gateway->execute(
+            request: $this->createRequest($token, $model),
+            catchReply: true, // do not want to throw a "redirect-to-landing-page" exception
+        );
     }
 
     public function supports($request): bool
