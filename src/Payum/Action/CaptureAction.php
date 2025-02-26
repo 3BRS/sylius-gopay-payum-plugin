@@ -15,7 +15,7 @@ use Payum\Core\Security\TokenInterface;
 use Sylius\Component\Core\Model\OrderInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\ParseFallbackLocaleCodeTrait;
-use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPayumRequest;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\GoPayPayumRequest;
 use Webmozart\Assert\Assert;
 
 final class CaptureAction implements ActionInterface, GatewayAwareInterface
