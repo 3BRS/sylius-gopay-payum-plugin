@@ -4,19 +4,20 @@ declare(strict_types=1);
 
 namespace ThreeBRS\SyliusGoPayPayumPlugin\Api;
 
-use GoPay\Api;
 use GoPay\Definition\Language;
 use GoPay\Definition\TokenScope;
 use GoPay\Http\Response;
 use GoPay\Payments;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPaymentsFactoryInterface;
 
 final class GoPayApi implements GoPayApiInterface
 {
-    public const PRODUCTION_GATEWAY_URL = 'https://gate.gopay.cz/api';
-
-    public const SANDBOX_TEST_GATEWAY_URL = 'https://gw.sandbox.gopay.com/api';
-
     private Payments $gopay;
+
+    public function __construct(
+        private GoPayPaymentsFactoryInterface $gopayPaymentsFactory,
+    ) {
+    }
 
     /**
      * For supported languages @see \GoPay\Definition\Language
@@ -35,29 +36,16 @@ final class GoPayApi implements GoPayApiInterface
         string $scope = TokenScope::ALL,
         int $timeout = 30,
     ): void {
-        $this->gopay = Api::payments([
-            'goid' => $goId,
-            'clientId' => $clientId,
-            'clientSecret' => $clientSecret,
-            'gatewayUrl' => $this->getGatewayUrl($isProductionMode, $gatewayUrl),
-            'isProductionMode' => $isProductionMode,
-            'language' => $language,
-            'scope' => $scope,
-            'timeout' => $timeout,
-        ]);
-    }
-
-    private function getGatewayUrl(
-        bool $isProductionMode,
-        ?string $gatewayUrl,
-    ): string {
-        if ($gatewayUrl !== null) {
-            return $gatewayUrl;
-        }
-
-        return $isProductionMode
-            ? self::PRODUCTION_GATEWAY_URL
-            : self::SANDBOX_TEST_GATEWAY_URL;
+        $this->gopay = $this->gopayPaymentsFactory->createPayments(
+            goId: $goId,
+            clientId: $clientId,
+            clientSecret: $clientSecret,
+            isProductionMode: $isProductionMode,
+            language: $language,
+            gatewayUrl: $gatewayUrl,
+            scope: $scope,
+            timeout: $timeout,
+        );
     }
 
     /**

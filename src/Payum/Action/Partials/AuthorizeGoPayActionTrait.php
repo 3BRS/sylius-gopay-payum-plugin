@@ -40,7 +40,7 @@ trait AuthorizeGoPayActionTrait
         \ArrayAccess $model,
         GoPayApiInterface $goPayApi,
     ): void {
-        Assert::string($model['locale'] ?? null);
+        Assert::string($model['locale'] ?? null, 'Locale is missing');
         assert($this->api !== [], 'API configuration is missing');
 
         $goPayApi->authorize(
