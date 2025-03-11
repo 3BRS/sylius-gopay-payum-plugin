@@ -11,7 +11,10 @@ use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPaymentsFactoryInterface;
 
 class GoPayPaymentsMockFactory implements GoPayPaymentsFactoryInterface
 {
-    private static ?GoPayPaymentsMock $lastPayments = null;
+    /**
+     * @var array<GoPayPaymentsMock>
+     */
+    private static array $lastPayments = [];
 
     public function createPayments(
         string  $goId,
@@ -24,12 +27,15 @@ class GoPayPaymentsMockFactory implements GoPayPaymentsFactoryInterface
         int     $timeout = 30,
     ): Payments {
         $payments = new GoPayPaymentsMock();
-        self::$lastPayments = $payments;
+        self::$lastPayments[] = $payments;
 
         return $payments;
     }
 
-    public function getLastPayments(): ?GoPayPaymentsMock
+    /**
+     * @return array<GoPayPaymentsMock>
+     */
+    public function getLastPayments(): array
     {
         return self::$lastPayments;
     }

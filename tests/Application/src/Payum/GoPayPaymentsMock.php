@@ -31,11 +31,27 @@ class GoPayPaymentsMock extends Payments
          * @see \ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\GoPayAction::processRefund
          * for expected response
          */
-        $data = [
-            'state' => 'REFUNDED',
-            'id' => 123456,
-            'gw_url' => 'https://example.com',
-        ];
+        $data = ['id' => 3276091767, 'result' => 'FINISHED'];
+        $json = json_encode($data);
+        $response = new Response($json);
+        $response->json = $data;
+        $response->statusCode = 200;
+
+        return $response;
+    }
+
+    public function getStatus(
+        $id,
+    ): Response {
+        assert(is_int($id), 'Expected int, got ' . gettype($id));
+
+        $this->lastPaymentId = $id;
+
+        /**
+         * @see \ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\GoPayAction::processCapture()
+         * for expected response
+         */
+        $data = ['orderId' => 1234, 'externalPaymentId' => 4567, 'state' => 'REFUNDED'];
         $json = json_encode($data);
         $response = new Response($json);
         $response->json = $data;
