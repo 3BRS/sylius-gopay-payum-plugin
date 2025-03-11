@@ -78,18 +78,13 @@ services:
         class: ThreeBRS\SyliusGoPayPayumPlugin\Message\CommandHandler\RefundPaymentHandler
         arguments:
             $refundRequestFactory: '@threebrs.gopay_payum.request.factory.refund'
+            $captureRequestFactory: '@threebrs.gopay_payum.request.factory.capture'
             $payum: '@payum'
             $paymentRepository: '@sylius.repository.payment'
             $supportedGateways: [ 'gopay' ]
         tags:
             -   name: messenger.message_handler
                 bus: sylius.command_bus
-
-    threebrs.gopay_payum.request.factory.refund:
-        class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\Factory\RefundRequestFactory
-
-    ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\Factory\RefundRequestFactoryInterface:
-        alias: threebrs.gopay_payum.request.factory.refund
 
     threebrs.gopay_payum.command.handler.cancel:
         public: true
@@ -102,6 +97,18 @@ services:
         tags:
             -   name: messenger.message_handler
                 bus: sylius.command_bus
+
+    threebrs.gopay_payum.request.factory.capture:
+        class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\Factory\CaptureRequestFactory
+
+    ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\Factory\CaptureRequestFactoryInterface:
+        alias: threebrs.gopay_payum.request.factory.capture
+
+    threebrs.gopay_payum.request.factory.refund:
+        class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\Factory\RefundRequestFactory
+
+    ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\Factory\RefundRequestFactoryInterface:
+        alias: threebrs.gopay_payum.request.factory.refund
 
     threebrs.gopay_payum.request.factory.cancel:
         class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\Factory\CancelRequestFactory

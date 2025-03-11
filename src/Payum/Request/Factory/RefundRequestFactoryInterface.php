@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\Factory;
 
-use Payum\Core\Model\ModelAggregateInterface;
+use Payum\Core\Request\Refund;
 use Payum\Core\Security\TokenInterface;
 
-interface RefundRequestFactoryInterface
+interface RefundRequestFactoryInterface extends ModelAggregateFactoryInterface
 {
-    public function createNewWithToken(TokenInterface $token): ModelAggregateInterface;
+    public function createNewWithToken(TokenInterface $token): Refund;
 }

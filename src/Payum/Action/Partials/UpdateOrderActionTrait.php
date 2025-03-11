@@ -20,28 +20,15 @@ trait UpdateOrderActionTrait
     ): void {
         $response = $gopayApi->retrieve($this->getExternalPaymentId($model));
 
-        if (GoPayApiInterface::PAID === $response->json['state']) {
+        $recognizedStates = [
+            GoPayApiInterface::PAID,
+            GoPayApiInterface::REFUNDED,
+            GoPayApiInterface::CANCELED,
+            GoPayApiInterface::TIMEOUTED,
+            GoPayApiInterface::CREATED,
+        ];
+        if (in_array($response->json['state'], $recognizedStates, true)) {
             $model['gopayStatus'] = $response->json['state'];
-            $request->setModel($model);
-        }
-
-        if (GoPayApiInterface::REFUNDED === $response->json['state']) {
-            $model['gopayStatus'] = $response->json['state'];
-            $request->setModel($model);
-        }
-
-        if (GoPayApiInterface::CANCELED === $response->json['state']) {
-            $model['gopayStatus'] = $response->json['state'];
-            $request->setModel($model);
-        }
-
-        if (GoPayApiInterface::TIMEOUTED === $response->json['state']) {
-            $model['gopayStatus'] = $response->json['state'];
-            $request->setModel($model);
-        }
-
-        if (GoPayApiInterface::CREATED === $response->json['state']) {
-            $model['gopayStatus'] = GoPayApiInterface::CANCELED;
             $request->setModel($model);
         }
     }

@@ -7,6 +7,7 @@ namespace ThreeBRS\SyliusGoPayPayumPlugin\Message\CommandHandler;
 use Payum\Core\Payum;
 use Sylius\Component\Core\Repository\PaymentRepositoryInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Message\Command\RefundPayment;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\Factory\CaptureRequestFactoryInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\Factory\RefundRequestFactoryInterface;
 
 final class RefundPaymentHandler extends AbstractPayumPaymentHandler
@@ -16,6 +17,7 @@ final class RefundPaymentHandler extends AbstractPayumPaymentHandler
      */
     public function __construct(
         private RefundRequestFactoryInterface $refundRequestFactory,
+        private CaptureRequestFactoryInterface $captureRequestFactory,
         private Payum $payum,
         PaymentRepositoryInterface $paymentRepository,
         array $supportedGateways = ['gopay'],
@@ -41,5 +43,9 @@ final class RefundPaymentHandler extends AbstractPayumPaymentHandler
 
         $refundRequest = $this->refundRequestFactory->createNewWithToken($token);
         $gateway->execute($refundRequest);
+
+        $captureRequest = $this->captureRequestFactory->createNewWithToken($token);
+        // to sync GoPay payment status which is not given by refund request
+        $gateway->execute($captureRequest);
     }
 }

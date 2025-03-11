@@ -11,6 +11,7 @@ use Payum\Core\Bridge\Spl\ArrayObject as PayumArrayObject;
 use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\Payum;
 use Payum\Core\Reply\HttpRedirect;
+use Payum\Core\Reply\HttpResponse;
 use Payum\Core\Security\TokenInterface;
 use Payum\Core\Storage\IdentityInterface;
 use RuntimeException;
@@ -77,11 +78,12 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
             $this->getAmount($model),
         );
 
-        if (!isset($response->json['errors']) && GoPayApiInterface::REFUNDED === $response->json['state']) {
+        // example of result '{"id":3276091767,"result":"FINISHED"}'
+        if (!isset($response->json['errors']) && GoPayApiInterface::FINISHED === $response->json['result']) {
             $model[self::REFUND_ID] = $response->json['id'];
             $request->setModel($model);
 
-            throw new HttpRedirect($response->json['gw_url']);
+            throw new HttpResponse('OK');
         }
 
         throw new RuntimeException('GoPay error: ' . $response->__toString());

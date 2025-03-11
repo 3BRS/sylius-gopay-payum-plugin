@@ -46,7 +46,7 @@ class OrderContext implements Context
         Assert::numeric($externalPaymentId);
 
         $lastPayment->setDetails([
-            GoPayAction::ORDER_ID => 123456,
+            GoPayAction::ORDER_ID            => 123456,
             GoPayAction::EXTERNAL_PAYMENT_ID => (int)$externalPaymentId,
         ]);
 
@@ -68,10 +68,15 @@ class OrderContext implements Context
         $lastPayment = $order->getLastPayment();
         Assert::notNull($lastPayment);
 
-        $lastGoPayPaymentsApi = $this->gopayPaymentsFactory->getLastPayments();
-        \assert($lastGoPayPaymentsApi !== null);
-        Assert::same($externalPaymentId, $lastGoPayPaymentsApi->getLastPaymentId());
+        $lastGoPayPaymentApis = $this->gopayPaymentsFactory->getLastPayments();
+        Assert::minCount(
+            $lastGoPayPaymentApis,
+            2,
+            'Expected at least 2 GoPay payment APIs, one for refund, second for capture, got ' . count($lastGoPayPaymentApis),
+        );
+        $lastButOneGoPayPaymentApi = array_slice($lastGoPayPaymentApis, -2, 1)[0];
+        Assert::same($lastButOneGoPayPaymentApi->getLastPaymentId(), $externalPaymentId);
         Assert::notNull($lastPayment->getAmount());
-        Assert::same($lastPayment->getAmount(), $lastGoPayPaymentsApi->getLastAmount());
+        Assert::same($lastButOneGoPayPaymentApi->getLastAmount(), $lastPayment->getAmount());
     }
 }
