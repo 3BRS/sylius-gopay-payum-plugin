@@ -172,6 +172,15 @@
             "ref": "b4edd2a1e6ac1827202f336cac2771cb529de542"
         }
     },
+    "sonata-project/doctrine-extensions": {
+        "version": "1.14",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.8",
+            "ref": "4ea4a4b6730f83239608d7d4c849533645c70169"
+        }
+    },
     "sonata-project/form-extensions": {
         "version": "1.20",
         "recipe": {
