@@ -6,7 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
-        "sylius/sylius": "1.12.*|1.13.*",
+        "sylius/sylius": "1.14.*",
         "webmozart/assert": "^1.11",
         "gopay/payments-sdk-php": "^1.7"
     },
@@ -43,12 +43,13 @@
         "symfony/http-kernel": "^6.0",
         "symfony/intl": "^6.0",
         "symfony/web-profiler-bundle": "^6.0",
-        "symfony/runtime": "^6.4",
-        "doctrine/annotations": "^1.14"
+        "symfony/runtime": "^6.0",
+        "doctrine/annotations": "^1.13.2|^2.0"
     },
     "conflict": {
         "api-platform/core": "<2.7.0 || 2.7.10 || 2.7.11 || 2.7.12",
         "babdev/pagerfanta-bundle": "<3.7.0",
+        "doctrine/annotations": "<1.13.2",
         "doctrine/collections": "<1.7.0",
         "doctrine/data-fixtures": "<1.5.1",
         "doctrine/dbal": "<2.13.3",
