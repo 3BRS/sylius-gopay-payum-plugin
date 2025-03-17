@@ -20,7 +20,7 @@ class StatusAction implements ActionInterface
         assert($request instanceof GetStatusInterface);
 
         $model = ArrayObject::ensureArrayObject($request->getModel());
-        $status = $model['gopayStatus']
+        $status = $model[GoPayAction::GOPAY_STATUS]
             ?? null;
 
         if ((null === $status || GoPayApiInterface::CREATED === $status) && !isset($model['orderId'])) {
@@ -36,12 +36,6 @@ class StatusAction implements ActionInterface
         }
 
         if (GoPayApiInterface::CANCELED === $status) {
-            $request->markCanceled();
-
-            return;
-        }
-
-        if (GoPayApiInterface::TIMEOUTED === $status) {
             $request->markCanceled();
 
             return;

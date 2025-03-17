@@ -58,6 +58,13 @@ services:
         tags:
             - { name: 'payum.action', factory: 'gopay' }
 
+    threebrs.gopay_payum.action.cancel:
+        class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\CancelAction
+        arguments:
+            - '@threebrs.gopay_payum.api'
+        tags:
+            - { name: 'payum.action', factory: 'gopay' }
+
     threebrs.gopay_payum.action.status:
         class: ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\StatusAction
         tags:
@@ -93,6 +100,7 @@ services:
             $cancelRequestFactory: '@threebrs.gopay_payum.request.factory.cancel'
             $payum: '@payum'
             $paymentRepository: '@sylius.repository.payment'
+            $logger: '@logger'
             $supportedGateways: [ 'gopay' ]
         tags:
             -   name: messenger.message_handler

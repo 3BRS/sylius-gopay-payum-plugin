@@ -61,6 +61,11 @@ final class GoPayApi implements GoPayApiInterface
         return $this->gopay->getStatus($paymentId);
     }
 
+    public function voidAuthorization(int $paymentId): Response
+    {
+        return $this->gopay->voidAuthorization($paymentId);
+    }
+
     /**
      * Note: refund requires GoPay token with scope=payment-all
      *

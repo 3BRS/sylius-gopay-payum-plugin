@@ -12,20 +12,27 @@ interface GoPayApiInterface
 {
     public const CREATED = 'CREATED';
 
+    public const AUTHORIZED = 'AUTHORIZED';
+
     public const PAID = 'PAID';
 
     public const REFUNDED = 'REFUNDED';
 
     public const CANCELED = 'CANCELED';
 
-    public const TIMEOUTED = 'TIMEOUTED';
+    /**
+     * API request timed out
+     *
+     * @noinspection PhpUnused
+     */
+    public const RESULT_TIMEOUTED = 'TIMEOUTED';
 
     /**
      * payment was finalized, for example by a refund
      *
      * @noinspection PhpUnused
      */
-    public const FINISHED = 'FINISHED';
+    public const RESULT_FINISHED = 'FINISHED';
 
     public function authorize(
         string $goId,
@@ -44,6 +51,8 @@ interface GoPayApiInterface
     public function create(array $order): Response;
 
     public function retrieve(int $paymentId): Response;
+
+    public function voidAuthorization(int $paymentId): Response;
 
     public function refund(
         int $paymentId,

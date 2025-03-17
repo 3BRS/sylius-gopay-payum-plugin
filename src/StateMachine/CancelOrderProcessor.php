@@ -16,8 +16,10 @@ final class CancelOrderProcessor implements PaymentStateProcessorInterface
     ) {
     }
 
-    public function __invoke(PaymentInterface $payment, string $fromState): void
-    {
+    public function __invoke(
+        PaymentInterface $payment,
+        string $fromState,
+    ): void {
         if (!in_array($fromState, [PaymentInterface::STATE_NEW, PaymentInterface::STATE_AUTHORIZED], true)) {
             return;
         }
@@ -25,6 +27,7 @@ final class CancelOrderProcessor implements PaymentStateProcessorInterface
         /** @var int|null $paymentId */
         $paymentId = $payment->getId();
         Assert::notNull($paymentId, 'Missing ID on payment object');
+
         $this->commandBus->dispatch(new CancelPayment($paymentId));
     }
 }
