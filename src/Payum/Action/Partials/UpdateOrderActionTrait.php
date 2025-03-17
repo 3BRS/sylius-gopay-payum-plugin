@@ -21,14 +21,14 @@ trait UpdateOrderActionTrait
         $response = $gopayApi->retrieve($this->getExternalPaymentId($model));
 
         $recognizedStates = [
+            GoPayApiInterface::CREATED,
+            GoPayApiInterface::AUTHORIZED,
             GoPayApiInterface::PAID,
             GoPayApiInterface::REFUNDED,
             GoPayApiInterface::CANCELED,
-            GoPayApiInterface::TIMEOUTED,
-            GoPayApiInterface::CREATED,
         ];
         if (in_array($response->json['state'], $recognizedStates, true)) {
-            $model['gopayStatus'] = $response->json['state'];
+            $model[GoPayAction::GOPAY_STATUS] = $response->json['state'];
             $request->setModel($model);
         }
     }

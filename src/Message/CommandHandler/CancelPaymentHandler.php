@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace ThreeBRS\SyliusGoPayPayumPlugin\Message\CommandHandler;
 
 use Payum\Core\Payum;
+use Psr\Log\LoggerInterface;
 use Sylius\Component\Core\Repository\PaymentRepositoryInterface;
+use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Message\Command\CancelPayment;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Exception\PaymentCanNotBeCanceledException;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\Factory\CancelRequestFactoryInterface;
 
 final class CancelPaymentHandler extends AbstractPayumPaymentHandler
@@ -18,6 +21,7 @@ final class CancelPaymentHandler extends AbstractPayumPaymentHandler
         private CancelRequestFactoryInterface $cancelRequestFactory,
         private Payum $payum,
         PaymentRepositoryInterface $paymentRepository,
+        private LoggerInterface $logger,
         array $supportedGateways = ['gopay'],
     ) {
         parent::__construct($paymentRepository, $payum, $supportedGateways);
@@ -49,6 +53,21 @@ final class CancelPaymentHandler extends AbstractPayumPaymentHandler
         $token = $this->buildToken($gatewayName, $payment);
 
         $cancelRequest = $this->cancelRequestFactory->createNewWithToken($token);
-        $gateway->execute($cancelRequest);
+
+        try {
+            $gateway->execute($cancelRequest);
+        } catch (PaymentCanNotBeCanceledException $paymentCanNotBeCanceledException) {
+            if ($paymentCanNotBeCanceledException->getGoPayStatus() !== GoPayApiInterface::CREATED) {
+                throw $paymentCanNotBeCanceledException;
+            }
+            // order is canceled, payment is "created", therefore not paid, and we can ignore it without stopping state machine
+            $this->logger->warning(
+                sprintf(
+                    'Payment can not be canceled because is "%s"c. GoPay will cancel it automatically later.',
+                    $paymentCanNotBeCanceledException->getGoPayStatus(),
+                ),
+                ['paymentId' => $payment->getId()],
+            );
+        }
     }
 }

@@ -14,13 +14,11 @@ install:
 	touch tests/Application/var/log/test.log && chmod 777 tests/Application/var/log/test.log
 
 backend:
-	APP_ENV=test tests/Application/bin/console doctrine:database:drop --force || true
+	APP_ENV=test tests/Application/bin/console doctrine:database:drop --force --if-exists
 	APP_ENV=test tests/Application/bin/console doctrine:database:create --no-interaction
 	APP_ENV=test tests/Application/bin/console doctrine:migrations:migrate --no-interaction
 	APP_ENV=test tests/Application/bin/console doctrine:schema:update --force --complete --no-interaction
 	APP_ENV=test tests/Application/bin/console doctrine:migration:sync-metadata-storage
-	APP_ENV=test tests/Application/bin/console sylius:install --no-interaction
-	APP_ENV=test tests/Application/bin/console sylius:fixtures:load default --no-interaction
 	rm -fr chmod -R 777 tests/Application/var && mkdir -m 777 tests/Application/var
 
 frontend:

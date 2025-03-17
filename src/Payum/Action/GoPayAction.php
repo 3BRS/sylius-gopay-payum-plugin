@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action;
 
 use ArrayObject;
+use GoPay\Http\Response;
 use Payum\Core\Action\ActionInterface;
 use Payum\Core\ApiAwareInterface;
 use Payum\Core\Bridge\Spl\ArrayObject as PayumArrayObject;
@@ -17,6 +18,7 @@ use Payum\Core\Storage\IdentityInterface;
 use RuntimeException;
 use Sylius\Component\Core\Model\CustomerInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
+use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Exception\PaymentCanNotBeCanceledException;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\AuthorizeGoPayActionTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\UpdateOrderActionTrait;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Request\GoPayPayumRequest;
@@ -32,6 +34,8 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
     public const ORDER_ID = 'orderId';
 
     public const REFUND_ID = 'refundId';
+
+    public const GOPAY_STATUS = 'gopayStatus';
 
     public function __construct(
         private GoPayApiInterface $goPayApi,
@@ -57,6 +61,10 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
                 $this->processRefund($request, $model);
 
                 return;
+            case CancelAction::CANCEL_ACTION:
+                $this->processCancel($request, $model);
+
+                return;
             default:
                 throw new RuntimeException('Unknown triggering action ' . $request->getTriggeringAction());
         }
@@ -79,7 +87,7 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         );
 
         // example of result '{"id":3276091767,"result":"FINISHED"}'
-        if (!isset($response->json['errors']) && GoPayApiInterface::FINISHED === $response->json['result']) {
+        if (!isset($response->json['errors']) && GoPayApiInterface::RESULT_FINISHED === $response->json['result']) {
             $model[self::REFUND_ID] = $response->json['id'];
             $request->setModel($model);
 
@@ -89,12 +97,65 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
         throw new RuntimeException('GoPay error: ' . $response->__toString());
     }
 
+    private function processCancel(
+        GoPayPayumRequest $request,
+        PayumArrayObject $model,
+    ): void {
+        if (empty($model[self::EXTERNAL_PAYMENT_ID])) {
+            throw new RuntimeException('External payment ID is missing.');
+        }
+
+        $response = $this->goPayApi->refund(
+            $this->getExternalPaymentId($model),
+            $this->getAmount($model),
+        );
+
+        // example of result '{"id":3276091767,"result":"FINISHED"}'
+        if ($this->isResponseSuccess($response)) {
+            $model[self::REFUND_ID] = $response->json['id'];
+            $request->setModel($model);
+
+            throw new HttpResponse('OK');
+        }
+        $goPayStatus = null;
+        if ($response->statusCode === 409) {
+            $this->processCapture($request, $model);
+
+            $goPayStatus = $model[self::GOPAY_STATUS] ?? null;
+            \assert($goPayStatus === null || is_string($goPayStatus));
+
+            if (in_array($goPayStatus ?? null, [GoPayApiInterface::REFUNDED, GoPayApiInterface::CANCELED])) {
+                throw new HttpResponse('OK');
+            }
+
+            if ($goPayStatus === GoPayApiInterface::AUTHORIZED) {
+                $response = $this->goPayApi->voidAuthorization($this->getExternalPaymentId($model));
+                if ($this->isResponseSuccess($response)) {
+                    $model[self::GOPAY_STATUS] = GoPayApiInterface::CANCELED;
+                    $request->setModel($model);
+
+                    throw new HttpResponse('OK');
+                }
+            }
+        }
+
+        throw new PaymentCanNotBeCanceledException(
+            message: 'GoPay error: ' . $response->__toString(),
+            goPayStatus: $goPayStatus,
+        );
+    }
+
+    private function isResponseSuccess(Response $response): bool
+    {
+        return !isset($response->json['errors']) && GoPayApiInterface::RESULT_FINISHED === $response->json['result'];
+    }
+
     private function getAmount(PayumArrayObject $model): int
     {
-        $externalPaymentId = $model['amount'];
-        assert(is_numeric($externalPaymentId));
+        $amount = $model['amount'];
+        assert(is_numeric($amount));
 
-        return (int) $externalPaymentId;
+        return (int) $amount;
     }
 
     private function processCapture(
@@ -133,7 +194,7 @@ class GoPayAction implements ApiAwareInterface, ActionInterface
     public function supports(mixed $request): bool
     {
         return $request instanceof GoPayPayumRequest &&
-               $request->getModel() instanceof ArrayObject;
+            $request->getModel() instanceof ArrayObject;
     }
 
     /**
