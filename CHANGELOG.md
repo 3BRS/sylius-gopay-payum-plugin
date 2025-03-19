@@ -1,3 +1,16 @@
+# 2.3
+
+- Add support for Sylius 1.14
+
+# 2.2
+
+- Add **cancel**
+  - GoPay does not support simple cancel, so it will try to refund, then revoke authorization, then if payment is **new** it will just log warning (canceling unpaid new payment after some time is responsibility of GoPay itself)
+
+# 2.1
+
+- **Auto-refund** on Sylius state machine transition (and button in admin)
+
 # 2.0
 
 - Add **refund**
