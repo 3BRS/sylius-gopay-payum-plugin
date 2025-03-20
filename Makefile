@@ -10,8 +10,7 @@ fix:
 install:
 	composer install --no-interaction --no-scripts
 	rm -fr tests/Application/public/media/cache && mkdir -p tests/Application/public/media/cache && chmod -R 777 tests/Application/public/media
-	rm -fr tests/Application/var && mkdir -p -m 777 tests/Application/var/log
-	touch tests/Application/var/log/test.log && chmod 777 tests/Application/var/log/test.log
+	@make var_dir
 
 backend:
 	APP_ENV=test tests/Application/bin/console doctrine:database:drop --force --if-exists
@@ -19,12 +18,16 @@ backend:
 	APP_ENV=test tests/Application/bin/console doctrine:migrations:migrate --no-interaction
 	APP_ENV=test tests/Application/bin/console doctrine:schema:update --force --complete --no-interaction
 	APP_ENV=test tests/Application/bin/console doctrine:migration:sync-metadata-storage
-	rm -fr chmod -R 777 tests/Application/var && mkdir -m 777 tests/Application/var
+	@make var_dir
 
 frontend:
 	APP_ENV=test tests/Application/bin/console assets:install
 	(cd tests/Application && yarn install --pure-lockfile)
 	(cd tests/Application && GULP_ENV=prod yarn build)
+
+var_dir:
+	rm -fr tests/Application/var && mkdir -p -m 777 tests/Application/var/log
+	touch tests/Application/var/log/test.log && chmod 777 tests/Application/var/log/test.log
 
 lint:
 	APP_ENV=test bin/symfony-lint.sh

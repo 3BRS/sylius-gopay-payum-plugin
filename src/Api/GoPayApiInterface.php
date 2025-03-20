@@ -12,20 +12,24 @@ interface GoPayApiInterface
 {
     public const CREATED = 'CREATED';
 
+    public const PAYMENT_METHOD_CHOSEN = 'PAYMENT_METHOD_CHOSEN';
+
     public const AUTHORIZED = 'AUTHORIZED';
 
     public const PAID = 'PAID';
+
+    public const PARTIALLY_REFUNDED = 'PARTIALLY_REFUNDED';
 
     public const REFUNDED = 'REFUNDED';
 
     public const CANCELED = 'CANCELED';
 
     /**
-     * API request timed out
+     * Customer does not pay in time
      *
      * @noinspection PhpUnused
      */
-    public const RESULT_TIMEOUTED = 'TIMEOUTED';
+    public const TIMEOUTED = 'TIMEOUTED';
 
     /**
      * payment was finalized, for example by a refund
