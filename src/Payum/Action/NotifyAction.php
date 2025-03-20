@@ -13,6 +13,7 @@ use Payum\Core\Exception\RequestNotSupportedException;
 use Payum\Core\GatewayAwareTrait;
 use Payum\Core\Reply\HttpResponse;
 use Payum\Core\Request\Notify;
+use Psr\Log\LoggerInterface;
 use Sylius\Component\Core\Model\PaymentInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Api\GoPayApiInterface;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\Partials\AuthorizeGoPayActionTrait;
@@ -27,6 +28,7 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
 
     public function __construct(
         private GoPayApiInterface $goPayApi,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -57,5 +59,10 @@ final class NotifyAction implements ActionInterface, ApiAwareInterface
     public function supports(mixed $request): bool
     {
         return $request instanceof Notify && $request->getModel() instanceof ArrayObject;
+    }
+
+    protected function getLogger(): LoggerInterface
+    {
+        return $this->logger;
     }
 }
