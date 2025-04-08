@@ -16,9 +16,9 @@ final class RefundPaymentHandler extends AbstractPayumPaymentHandler
      * @param string[] $supportedGateways
      */
     public function __construct(
-        private RefundRequestFactoryInterface $refundRequestFactory,
-        private CaptureRequestFactoryInterface $captureRequestFactory,
-        private Payum $payum,
+        private readonly RefundRequestFactoryInterface $refundRequestFactory,
+        private readonly CaptureRequestFactoryInterface $captureRequestFactory,
+        private readonly Payum $payum,
         PaymentRepositoryInterface $paymentRepository,
         array $supportedGateways = ['gopay'],
     ) {

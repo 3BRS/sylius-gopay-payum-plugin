@@ -12,7 +12,7 @@
 			<argument type="service" id="sylius.behat.page.admin.payment_method.index" />
 			<argument type="service" id="sylius.behat.page.admin.payment_method.update" />
 			<argument type="service" id="sylius.behat.current_page_resolver" />
-			<argument type="service" id="sylius.behat.notification_checker" />
+			<argument type="service" id="sylius.behat.notification_checker.admin" />
 			<argument type="collection">
 				<argument key="offline">Offline</argument>
 				<argument key="paypal_express_checkout">Paypal Express Checkout</argument>
@@ -49,7 +49,7 @@
 
 		<service id="Tests\ThreeBRS\SyliusGoPayPayumPlugin\Behat\Context\Setup\OrderContext" class="Tests\ThreeBRS\SyliusGoPayPayumPlugin\Behat\Context\Setup\OrderContext">
 			<argument type="service" id="doctrine.orm.entity_manager" />
-			<argument type="service" id="sm.factory" />
+			<argument type="service" id="sylius_abstraction.state_machine" />
 			<argument type="service" id="threebrs.gopay_payum.payments.factory" />
 			<argument type="service" id="sylius.behat.shared_storage" />
 		</service>

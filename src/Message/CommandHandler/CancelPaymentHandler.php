@@ -18,10 +18,10 @@ final class CancelPaymentHandler extends AbstractPayumPaymentHandler
      * @param string[] $supportedGateways
      */
     public function __construct(
-        private CancelRequestFactoryInterface $cancelRequestFactory,
-        private Payum $payum,
+        private readonly CancelRequestFactoryInterface $cancelRequestFactory,
+        private readonly Payum $payum,
         PaymentRepositoryInterface $paymentRepository,
-        private LoggerInterface $logger,
+        private readonly LoggerInterface $logger,
         array $supportedGateways = ['gopay'],
     ) {
         parent::__construct($paymentRepository, $payum, $supportedGateways);

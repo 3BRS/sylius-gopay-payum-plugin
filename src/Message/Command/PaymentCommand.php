@@ -6,7 +6,7 @@ namespace ThreeBRS\SyliusGoPayPayumPlugin\Message\Command;
 
 abstract class PaymentCommand implements PaymentCommandInterface
 {
-    public function __construct(private int $paymentId)
+    public function __construct(private readonly int $paymentId)
     {
     }
 

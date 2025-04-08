@@ -6,7 +6,6 @@ namespace Tests\ThreeBRS\SyliusGoPayPayumPlugin\Behat\Context\Setup;
 
 use Behat\Behat\Context\Context;
 use Doctrine\Persistence\ObjectManager;
-use SM\Factory\FactoryInterface;
 use Sylius\Abstraction\StateMachine\StateMachineInterface;
 use Sylius\Behat\Service\SharedStorageInterface;
 use Sylius\Component\Core\Model\OrderInterface;
@@ -16,14 +15,14 @@ use ThreeBRS\SyliusGoPayPayumPlugin\Payum\Action\GoPayAction;
 use ThreeBRS\SyliusGoPayPayumPlugin\Payum\GoPayPaymentsFactoryInterface;
 use Webmozart\Assert\Assert;
 
-class OrderContext implements Context
+readonly class OrderContext implements Context
 {
     public function __construct(
-        private ObjectManager                 $objectManager,
-        private FactoryInterface              $stateMachineFactory,
+        private ObjectManager $objectManager,
+        private StateMachineInterface $stateMachineFactory,
         /** @var GoPayPaymentsMockFactory */
         private GoPayPaymentsFactoryInterface $gopayPaymentsFactory,
-        private SharedStorageInterface        $sharedStorage,
+        private SharedStorageInterface $sharedStorage,
     ) {
         \assert(
             $gopayPaymentsFactory instanceof GoPayPaymentsMockFactory,
@@ -37,7 +36,7 @@ class OrderContext implements Context
      */
     public function thisOrderIsAlreadyPaidByGoPay(
         OrderInterface $order,
-        int            $externalPaymentId,
+        int $externalPaymentId,
     ): void {
         $lastPayment = $order->getLastPayment();
         Assert::notNull($lastPayment);
@@ -46,14 +45,17 @@ class OrderContext implements Context
         Assert::numeric($externalPaymentId);
 
         $lastPayment->setDetails([
-            GoPayAction::ORDER_ID            => 123456,
+            GoPayAction::ORDER_ID => 123456,
             GoPayAction::EXTERNAL_PAYMENT_ID => (int)$externalPaymentId,
         ]);
 
         $this->sharedStorage->set('external_payment_ID', $externalPaymentId);
 
-        $this->stateMachineFactory->get($lastPayment, PaymentTransitions::GRAPH)
-            ->apply(PaymentTransitions::TRANSITION_COMPLETE);
+        $this->stateMachineFactory->apply(
+            $lastPayment,
+            PaymentTransitions::GRAPH,
+            PaymentTransitions::TRANSITION_COMPLETE
+        );
 
         $this->objectManager->flush();
     }
@@ -63,7 +65,7 @@ class OrderContext implements Context
      */
     public function goPayShouldBeRequestedToRefundThatOrder(
         OrderInterface $order,
-                       $externalPaymentId,
+        $externalPaymentId,
     ): void {
         $lastPayment = $order->getLastPayment();
         Assert::notNull($lastPayment);

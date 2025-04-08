@@ -18,9 +18,9 @@ abstract class AbstractPayumPaymentHandler
      * @param string[] $supportedGateways
      */
     public function __construct(
-        private PaymentRepositoryInterface $paymentRepository,
-        private Payum $payum,
-        private array $supportedGateways = ['gopay'],
+        private readonly PaymentRepositoryInterface $paymentRepository,
+        private readonly Payum $payum,
+        private readonly array $supportedGateways = ['gopay'],
     ) {
     }
 

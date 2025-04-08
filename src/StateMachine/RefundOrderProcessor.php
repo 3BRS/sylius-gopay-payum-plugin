@@ -13,7 +13,7 @@ use Webmozart\Assert\Assert;
 final class RefundOrderProcessor implements PaymentStateProcessorInterface
 {
     public function __construct(
-        private MessageBusInterface $commandBus,
+        private readonly MessageBusInterface $commandBus,
     ) {
     }
 

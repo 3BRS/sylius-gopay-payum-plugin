@@ -20,13 +20,12 @@ frontend:
 	(cd tests/Application && GULP_ENV=prod yarn build)
 
 var:
-	rm -fr tests/Application/var && mkdir -p -m 777 tests/Application/var/log
+	rm -fr tests/Application/var && mkdir -p -m 777 tests/Application/var/log && mkdir -p -m 777 tests/Application/var/cache/test
 	touch tests/Application/var/log/test.log && chmod 777 tests/Application/var/log/test.log
 
 recreate_db:
 	APP_ENV=test tests/Application/bin/console doctrine:database:drop --force --if-exists
 	APP_ENV=test tests/Application/bin/console doctrine:database:create --no-interaction
-	APP_ENV=test tests/Application/bin/console doctrine:migrations:migrate --no-interaction
 	APP_ENV=test tests/Application/bin/console doctrine:schema:update --force --complete --no-interaction
 	APP_ENV=test tests/Application/bin/console doctrine:migration:sync-metadata-storage
 
