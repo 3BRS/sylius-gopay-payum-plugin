@@ -13,6 +13,9 @@
     <img src="https://circleci.com/gh/3BRS/sylius-gopay-payum-plugin.svg?style=shield" />
 </a>
 
+## ⚠️ Deprecated
+Use https://github.com/3BRS/sylius-gopay for Sylius 2+
+
 ## Capabilities
 
 - **Payment** via Sylius standard checkout
